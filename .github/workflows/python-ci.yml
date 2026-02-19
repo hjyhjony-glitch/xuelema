@@ -1,0 +1,56 @@
+name: Python CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11"]
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f "requirements.txt" ]; then
+          pip install -r requirements.txt
+        elif [ -f "pyproject.toml" ]; then
+          pip install .
+        fi
+    
+    - name: Lint with ruff
+      run: |
+        pip install ruff
+        # Only run on Python files in the repo
+        if [ -n "$(find . -name '*.py' -not -path './.*' | head -20)" ]; then
+          ruff check --output-format=github .
+        else
+          echo "No Python files found to lint"
+        fi
+    
+    - name: Test with pytest
+      run: |
+        if [ -f "requirements.txt" ] || [ -f "pyproject.toml" ]; then
+          pip install pytest pytest-cov
+          # Check for test files
+          if [ -n "$(find . -name '*test*.py' -not -path './.*' | head -10)" ]; then
+            pytest --cov=. --cov-report=xml
+          else
+            echo "No test files found"
+          fi
+        else
+          echo "No Python dependencies file found"
+        fi
