@@ -4,6 +4,8 @@ import 'screens/home_screen.dart';
 import 'screens/task_list_screen.dart';
 import 'screens/focus_screen.dart';
 import 'screens/quiz_screen.dart';
+import 'screens/quiz_practice_screen.dart';
+import 'screens/quiz_result_screen.dart';
 import 'screens/mistake_screen.dart';
 import 'screens/plan_screen.dart';
 import 'screens/review_screen.dart';

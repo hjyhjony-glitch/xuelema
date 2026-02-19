@@ -8,6 +8,7 @@ class QuizResultScreen extends StatefulWidget {
   final int correctCount;
   final int? wrongCount;
   final int? timeSpentSeconds;
+  final String? setName;
   final VoidCallback? onRetry;
   final VoidCallback? onReview;
   final VoidCallback? onContinue;
@@ -18,6 +19,7 @@ class QuizResultScreen extends StatefulWidget {
     required this.correctCount,
     this.wrongCount,
     this.timeSpentSeconds,
+    this.setName,
     this.onRetry,
     this.onReview,
     this.onContinue,
@@ -68,7 +70,7 @@ class _QuizResultScreenState extends State<QuizResultScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.l10n.quizResults),
+        title: Text(widget.setName ?? context.l10n.quizResults),
         automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(
