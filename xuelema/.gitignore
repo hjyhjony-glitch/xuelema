@@ -24,3 +24,6 @@ coverage/
 
 # Local configuration
 *.env
+
+# Memory files (internal docs, not for GitHub)
+memory/
