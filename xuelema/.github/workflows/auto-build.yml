@@ -2,9 +2,20 @@ name: Auto-Build with Self-Healing
 
 on:
   push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+    branches: [ main ]
+    # 只在以下文件变化时触发构建
+    paths:
+      - '**.dart'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+      - '.github/workflows/**'
+      - 'lib/**'
+      - 'test/**'
+      # 排除以下文件变化
+      ignore:
+        - '**.md'
+        - 'docs/**'
+        - 'memory/**'
   workflow_dispatch:
     inputs:
       retry_count:
