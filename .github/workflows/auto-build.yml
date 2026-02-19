@@ -1,4 +1,4 @@
-﻿name: Auto-Build with Self-Healing
+name: Auto-Build with Self-Healing
 
 on:
   push:
@@ -35,37 +35,25 @@ jobs:
         channel: 'stable'
     
     - name: Install dependencies
-      run: |
-        cd xuelema
-        flutter pub get
+      run: flutter pub get
+    
+    - name: Generate localization files
+      run: flutter gen-l10n
     
     - name: Run flutter analyze
       id: analyze
       run: |
-        cd xuelema
         result=$(flutter analyze 2>&1)
         echo "$result" > analyze_result.txt
-        mkdir -p error-logs
-        echo "$result" > error-logs/analyze_full.log
-        
         if echo "$result" | grep -q "error:"; then
           echo "success=false" >> $GITHUB_OUTPUT
-          echo "$result" | grep "error:" > error-logs/analyze_errors.txt
-          echo "=== Flutter Analyze Errors ==="
-          cat error-logs/analyze_errors.txt
+          echo "=== Flutter Analyze Errors ===" >> $GITHUB_STEP_SUMMARY
+          echo "$result" | grep "error:" >> $GITHUB_STEP_SUMMARY
           exit 1
         else
           echo "success=true" >> $GITHUB_OUTPUT
-          echo "✅ No analyze errors found"
+          echo "✅ No analyze errors found" >> $GITHUB_STEP_SUMMARY
         fi
-    
-    # ✅ 修复: 确保 analyze 失败时上传 artifact
-    - name: Upload analyze errors
-      if: failure()
-      uses: actions/upload-artifact@v4
-      with:
-        name: analyze-errors
-        path: error-logs/
 
   test:
     name: Unit Tests
@@ -82,14 +70,13 @@ jobs:
         channel: 'stable'
     
     - name: Install dependencies
-      run: |
-        cd xuelema
-        flutter pub get
+      run: flutter pub get
+    
+    - name: Generate localization files
+      run: flutter gen-l10n
     
     - name: Run tests
-      run: |
-        cd xuelema
-        flutter test --coverage
+      run: flutter test --coverage
 
   build-android:
     name: Build Android APK
@@ -106,33 +93,23 @@ jobs:
         channel: 'stable'
     
     - name: Clean build
-      run: |
-        cd xuelema
-        flutter clean
+      run: flutter clean
     
     - name: Install dependencies
-      run: |
-        cd xuelema
-        flutter pub get
+      run: flutter pub get
+    
+    - name: Generate localization files
+      run: flutter gen-l10n
     
     - name: Build APK
       id: build
       run: |
-        cd xuelema
         result=$(flutter build apk --debug 2>&1)
         echo "$result" > build_result.txt
         echo "$result"
         if [ $? -ne 0 ]; then
           exit 1
         fi
-    
-    - name: Upload build result
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: build-result
-        path: build_result.txt
-        retention-days: 1
     
     - name: Upload APK
       if: success()
@@ -145,15 +122,11 @@ jobs:
     name: Self-Healing (Auto-Retry)
     runs-on: ubuntu-latest
     needs: build-android
-    # ✅ 修复: 使用正确的上下文语法
-    if: ${{ failure() && github.event_name == 'push' && github.actor != 'github-actions[bot]' && github.event.inputs.retry_count != '1' }}
+    if: ${{ failure() && github.event_name == 'push' && github.event.inputs.retry_count == '0' }}
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      with:
-        ref: ${{ github.ref }}
-        token: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
@@ -161,61 +134,38 @@ jobs:
         flutter-version: '3.27.4'
         channel: 'stable'
     
-    # ✅ 修复: 下载正确的 artifact 名称
-    - name: Download build artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: build-result  # ✅ 使用实际存在的 artifact 名称
-        path: build-logs
-      continue-on-error: true
-    
     - name: Analyze build failure
       id: analyze
       run: |
         echo "=== Build Failure Analysis ==="
         echo "Checking common issues..."
         
-        # 读取之前的构建日志（如果存在）
-        if [ -f build-logs/build_result.txt ]; then
-          echo "=== Build Result ==="
-          cat build-logs/build_result.txt
+        # 读取之前的构建日志
+        if [ -f build_result.txt ]; then
+          echo "Build result:"
+          cat build_result.txt
         fi
-        
-        # 输出修复状态
-        echo "fixed=false" >> $GITHUB_OUTPUT
         
         # 检查l10n国际化错误
         if grep -r "app_localizations" lib --include="*.dart" | grep -q "import"; then
           echo "⚠️ Found l10n import errors"
-          echo "fixed=true" >> $GITHUB_OUTPUT
+          fixed=true
         fi
         
         # 检查缺少的import
-        if grep -q "Undefined class\|Undefined name" build-logs/build_result.txt 2>/dev/null; then
+        if grep -q "Undefined class\|Undefined name" build_result.txt; then
           echo "⚠️ Found missing classes or imports"
-          echo "fixed=true" >> $GITHUB_OUTPUT
+          fixed=true
         fi
         
         # 检查依赖问题
-        if grep -q "The current Dart SDK version\|depends on" build-logs/build_result.txt 2>/dev/null; then
+        if grep -q "The current Dart SDK version\|depends on" build_result.txt; then
           echo "⚠️ Found dependency version issues"
-          echo "fixed=true" >> $GITHUB_OUTPUT
+          fixed=true
         fi
         
-        # 检查文件路径问题（Windows路径问题）
-        if grep -q "E:\\\\xueliao" build-logs/build_result.txt 2>/dev/null; then
-          echo "⚠️ Found Windows path issues in build logs"
-          echo "fixed=true" >> $GITHUB_OUTPUT
-        fi
-        
-        # 检查Flutter版本问题
-        if grep -q "No pubspec.yaml\|pubspec.lock" build-logs/build_result.txt 2>/dev/null; then
-          echo "⚠️ Found pubspec issues"
-          echo "fixed=true" >> $GITHUB_OUTPUT
-        fi
-        
-        FIXED=$(cat $GITHUB_OUTPUT | grep "fixed=" | cut -d= -f2)
-        if [ "$FIXED" == "true" ]; then
+        # 输出修复状态
+        if [ "$fixed" == "true" ]; then
           echo "Issues found. Auto-fix will be applied."
         else
           echo "No auto-fixable issues found. Manual intervention required."
@@ -225,7 +175,6 @@ jobs:
       id: fix
       run: |
         # 清理build目录
-        cd xuelema
         flutter clean
         
         # 重新获取依赖
@@ -236,92 +185,71 @@ jobs:
     - name: Commit and push auto-fixes
       if: steps.fix.outputs.fixed == 'true'
       run: |
-        # 修复: 添加token配置
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
         git add -A
         git commit -m "auto-fix: heal common build issues" || echo "No changes to commit"
-        # 修复: 使用token进行push
         git push origin ${{ github.ref }} || echo "Push failed - may need permissions"
     
     - name: Trigger retry workflow
       if: steps.fix.outputs.fixed == 'true'
       run: |
         echo "Auto-fix applied. New build will be triggered by the commit above."
-        echo "retry_count=1" >> $GITHUB_OUTPUT
+        # 等待一小段时间
+        sleep 5
 
   notify:
     name: Notify
     runs-on: ubuntu-latest
-    needs: [analyze]
+    needs: [build-android, self-heal]
     if: always()
     
     steps:
-    # ✅ 修复: 正确下载 analyze-errors artifact
-    - name: Download analyze errors
-      if: needs.analyze.result == 'failure'
-      uses: actions/download-artifact@v4
-      with:
-        name: analyze-errors
-        path: error-logs
-      continue-on-error: true
-    
-    - name: Read error details
-      id: errors
-      if: needs.analyze.result == 'failure'
-      run: |
-        if [ -f error-logs/analyze_errors.txt ]; then
-          echo "errors=$(cat error-logs/analyze_errors.txt | head -20 | tr '\n' ' ' | sed 's/"/\\"/g' | cut -c1-500)" >> $GITHUB_OUTPUT
-        else
-          echo "errors=Unknown error - artifact may not exist" >> $GITHUB_OUTPUT
-        fi
-    
     - name: Check build status
       id: status
       run: |
-        ANALYZE_STATUS="${{ needs.analyze.result }}"
-        
-        if [ "$ANALYZE_STATUS" == "success" ]; then
+        if [ "${{ needs.build-android.result }}" == "success" ]; then
           echo "status=success" >> $GITHUB_OUTPUT
+          echo "✅ Build completed successfully!"
+          echo "APK: build/app/outputs/flutter-apk/app-debug.apk"
+        elif [ "${{ needs.self-heal.outputs.fixed }}" == "true" ]; then
+          echo "status=healed" >> $GITHUB_OUTPUT
+          echo "🔧 Auto-fix applied. Check new build."
         else
           echo "status=failed" >> $GITHUB_OUTPUT
+          echo "❌ Build failed. Manual intervention required."
         fi
-    
+
     - name: Send failure notification to Feishu
-      if: needs.analyze.result == 'failure'
-      run: |
-        ERRORS=""
-        if [ -f error-logs/analyze_errors.txt ]; then
-          ERRORS=$(cat error-logs/analyze_errors.txt | grep "error:" | head -5 | tr '\n' ' ')
-        fi
-        
-        if [ -n "${{ secrets.FEISHU_WEBHOOK_URL }}" ]; then
-          curl -X POST -H "Content-Type: application/json" \
-            -d "{
-              \"msg_type\": \"text\",
-              \"content\": {
-                \"text\": \"⚠️ **GitHub Actions 构建失败**\\n\\n项目: xuelema\\n分支: ${{ github.ref }}\\n\\n🔍 **错误信息**:\\n$ERRORS\\n\\n🔗 [查看详情](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\"
-              }
-            }" \
-            "${{ secrets.FEISHU_WEBHOOK_URL }}" || echo "Failed to send Feishu notification"
-        else
-          echo "FEISHU_WEBHOOK_URL not configured"
-        fi
-    
-    - name: Send success notification to Feishu
-      if: needs.analyze.result == 'success'
+      if: needs.build-android.result == 'failure'
       run: |
         if [ -n "${{ secrets.FEISHU_WEBHOOK_URL }}" ]; then
           curl -X POST -H "Content-Type: application/json" \
             -d '{
               "msg_type": "text",
               "content": {
-                "text": "✅ **GitHub Actions 代码分析通过**\\n\\n项目: xuelema\\n分支: ${{ github.ref }}\\n\\n代码分析通过，可以进行下一步构建。"
+                "text": "⚠️ **GitHub Actions 构建失败**\n\n项目: xuelema\n分支: ${{ github.ref }}\n时间: ${{ github.event.head_commit.timestamp }}\n\n🔗 [查看详情](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
               }
             }' \
-            "${{ secrets.FEISHU_WEBHOOK_URL }}" || echo "Failed to send Feishu notification"
+            "${{ secrets.FEISHU_WEBHOOK_URL }}"
         else
-          echo "FEISHU_WEBHOOK_URL not configured"
+          echo "FEISHU_WEBHOOK_URL not configured, skipping notification"
+        fi
+
+    - name: Send success notification to Feishu
+      if: needs.build-android.result == 'success'
+      run: |
+        if [ -n "${{ secrets.FEISHU_WEBHOOK_URL }}" ]; then
+          curl -X POST -H "Content-Type: application/json" \
+            -d '{
+              "msg_type": "text",
+              "content": {
+                "text": "✅ **GitHub Actions 构建成功**\n\n项目: xuelema\n分支: ${{ github.ref }}\n时间: ${{ github.event.head_commit.timestamp }}\n\nAPK: build/app/outputs/flutter-apk/app-debug.apk"
+              }
+            }' \
+            "${{ secrets.FEISHU_WEBHOOK_URL }}"
+        else
+          echo "FEISHU_WEBHOOK_URL not configured, skipping notification"
         fi
 
   report:
@@ -337,4 +265,3 @@ jobs:
         echo "Build: ${{ needs.build-android.result }}"
         echo "Self-Heal: ${{ needs.self-heal.result || 'skipped' }}"
         echo "Notify: ${{ needs.notify.result }}"
-
