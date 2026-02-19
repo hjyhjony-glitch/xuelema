@@ -1,0 +1,26 @@
+# Git ignore patterns
+
+# Build outputs
+build/
+
+# Flutter build outputs
+**/build/
+**/.dart_tool/build/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test coverage
+coverage/
+
+# Local configuration
+*.env

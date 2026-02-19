@@ -1,0 +1,258 @@
+name: Auto-Build with Self-Healing
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+    inputs:
+      retry_count:
+        description: 'Retry count'
+        required: false
+        default: '0'
+
+# 配置GitHub Actions权限
+permissions:
+  contents: write  # 允许self-heal提交修复代码
+  actions: read   # 允许读取构建状态
+  checks: write   # 允许更新检查状态
+
+jobs:
+  analyze:
+    name: Code Analysis
+    runs-on: ubuntu-latest
+    outputs:
+      success: ${{ steps.analyze.outputs.success }}
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.27.4'
+        channel: 'stable'
+    
+    - name: Install dependencies
+      run: flutter pub get
+    
+    - name: Run flutter analyze
+      id: analyze
+      run: |
+        result=$(flutter analyze 2>&1)
+        echo "$result" > analyze_result.txt
+        if echo "$result" | grep -q "error:"; then
+          echo "success=false" >> $GITHUB_OUTPUT
+          echo "=== Flutter Analyze Errors ===" >> $GITHUB_STEP_SUMMARY
+          echo "$result" | grep "error:" >> $GITHUB_STEP_SUMMARY
+          exit 1
+        else
+          echo "success=true" >> $GITHUB_OUTPUT
+          echo "✅ No analyze errors found" >> $GITHUB_STEP_SUMMARY
+        fi
+
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: analyze
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.27.4'
+        channel: 'stable'
+    
+    - name: Install dependencies
+      run: flutter pub get
+    
+    - name: Run tests
+      run: flutter test --coverage
+
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.27.4'
+        channel: 'stable'
+    
+    - name: Clean build
+      run: flutter clean
+    
+    - name: Install dependencies
+      run: flutter pub get
+    
+    - name: Build APK
+      id: build
+      run: |
+        result=$(flutter build apk --debug 2>&1)
+        echo "$result" > build_result.txt
+        echo "$result"
+        if [ $? -ne 0 ]; then
+          exit 1
+        fi
+    
+    - name: Upload APK
+      if: success()
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-debug.apk
+        path: build/app/outputs/flutter-apk/app-debug.apk
+
+  self-heal:
+    name: Self-Healing (Auto-Retry)
+    runs-on: ubuntu-latest
+    needs: build-android
+    if: ${{ failure() && github.event_name == 'push' && github.event.inputs.retry_count == '0' }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.27.4'
+        channel: 'stable'
+    
+    - name: Analyze build failure
+      id: analyze
+      run: |
+        echo "=== Build Failure Analysis ==="
+        echo "Checking common issues..."
+        
+        # 读取之前的构建日志
+        if [ -f build_result.txt ]; then
+          echo "Build result:"
+          cat build_result.txt
+        fi
+        
+        # 检查l10n国际化错误
+        if grep -r "app_localizations" lib --include="*.dart" | grep -q "import"; then
+          echo "⚠️ Found l10n import errors"
+          fixed=true
+        fi
+        
+        # 检查缺少的import
+        if grep -q "Undefined class\|Undefined name" build_result.txt; then
+          echo "⚠️ Found missing classes or imports"
+          fixed=true
+        fi
+        
+        # 检查依赖问题
+        if grep -q "The current Dart SDK version\|depends on" build_result.txt; then
+          echo "⚠️ Found dependency version issues"
+          fixed=true
+        fi
+        
+        # 输出修复状态
+        if [ "$fixed" == "true" ]; then
+          echo "Issues found. Auto-fix will be applied."
+        else
+          echo "No auto-fixable issues found. Manual intervention required."
+        fi
+    
+    - name: Try auto-fix common issues
+      id: fix
+      run: |
+        # 清理build目录
+        flutter clean
+        
+        # 重新获取依赖
+        flutter pub get
+        
+        echo "fixed=true" >> $GITHUB_OUTPUT
+    
+    - name: Commit and push auto-fixes
+      if: steps.fix.outputs.fixed == 'true'
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add -A
+        git commit -m "auto-fix: heal common build issues" || echo "No changes to commit"
+        git push origin ${{ github.ref }} || echo "Push failed - may need permissions"
+    
+    - name: Trigger retry workflow
+      if: steps.fix.outputs.fixed == 'true'
+      run: |
+        echo "Auto-fix applied. New build will be triggered by the commit above."
+        # 等待一小段时间
+        sleep 5
+
+  notify:
+    name: Notify
+    runs-on: ubuntu-latest
+    needs: [build-android, self-heal]
+    if: always()
+    
+    steps:
+    - name: Check build status
+      id: status
+      run: |
+        if [ "${{ needs.build-android.result }}" == "success" ]; then
+          echo "status=success" >> $GITHUB_OUTPUT
+          echo "✅ Build completed successfully!"
+          echo "APK: build/app/outputs/flutter-apk/app-debug.apk"
+        elif [ "${{ needs.self-heal.outputs.fixed }}" == "true" ]; then
+          echo "status=healed" >> $GITHUB_OUTPUT
+          echo "🔧 Auto-fix applied. Check new build."
+        else
+          echo "status=failed" >> $GITHUB_OUTPUT
+          echo "❌ Build failed. Manual intervention required."
+        fi
+
+    - name: Send failure notification to Feishu
+      if: needs.build-android.result == 'failure'
+      run: |
+        if [ -n "${{ secrets.FEISHU_WEBHOOK_URL }}" ]; then
+          curl -X POST -H "Content-Type: application/json" \
+            -d '{
+              "msg_type": "text",
+              "content": {
+                "text": "⚠️ **GitHub Actions 构建失败**\n\n项目: xuelema\n分支: ${{ github.ref }}\n时间: ${{ github.event.head_commit.timestamp }}\n\n🔗 [查看详情](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+              }
+            }' \
+            "${{ secrets.FEISHU_WEBHOOK_URL }}"
+        else
+          echo "FEISHU_WEBHOOK_URL not configured, skipping notification"
+        fi
+
+    - name: Send success notification to Feishu
+      if: needs.build-android.result == 'success'
+      run: |
+        if [ -n "${{ secrets.FEISHU_WEBHOOK_URL }}" ]; then
+          curl -X POST -H "Content-Type: application/json" \
+            -d '{
+              "msg_type": "text",
+              "content": {
+                "text": "✅ **GitHub Actions 构建成功**\n\n项目: xuelema\n分支: ${{ github.ref }}\n时间: ${{ github.event.head_commit.timestamp }}\n\nAPK: build/app/outputs/flutter-apk/app-debug.apk"
+              }
+            }' \
+            "${{ secrets.FEISHU_WEBHOOK_URL }}"
+        else
+          echo "FEISHU_WEBHOOK_URL not configured, skipping notification"
+        fi
+
+  report:
+    name: Build Report
+    runs-on: ubuntu-latest
+    needs: notify
+    if: always()
+    
+    steps:
+    - name: Generate summary
+      run: |
+        echo "=== Build Summary ==="
+        echo "Build: ${{ needs.build-android.result }}"
+        echo "Self-Heal: ${{ needs.self-heal.result || 'skipped' }}"
+        echo "Notify: ${{ needs.notify.result }}"

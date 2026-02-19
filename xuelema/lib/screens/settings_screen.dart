@@ -1,0 +1,55 @@
+/// 设置页面（简化版）
+import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
+
+class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    
+    return Scaffold(
+      appBar: AppBar(title: Text(l10n.settings)),
+      body: ListView(
+        padding: EdgeInsets.all(16),
+        children: [
+          _buildSection(l10n.general, [
+            _buildItem(Icons.notifications, l10n.notificationSettings, () {}),
+            _buildItem(Icons.dark_mode, l10n.darkMode, () {}),
+            _buildItem(Icons.language, l10n.languageSettings, () {}),
+          ]),
+          SizedBox(height: 16),
+          _buildSection(l10n.aboutSection, [
+            _buildItem(Icons.info, l10n.versionInfo, () {}),
+            _buildItem(Icons.help, l10n.helpCenter, () {}),
+          ]),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSection(String title, List<Widget> children) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(padding: EdgeInsets.only(bottom: 8), child: Text(title, style: TextStyle(fontSize: 14, color: Colors.grey))),
+        Card(child: Column(children: children)),
+      ],
+    );
+  }
+
+  Widget _buildItem(IconData icon, String title, VoidCallback onTap) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(title),
+      trailing: Icon(Icons.chevron_right),
+      onTap: onTap,
+    );
+  }
+}
