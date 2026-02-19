@@ -1,5 +1,6 @@
 import 'package:uuid/uuid.dart';
 import '../l10n/app_localizations.dart';
+import '../extensions/l10n_extension.dart';
 
 class Knowledge {
   final String id;

@@ -1,6 +1,7 @@
 /// 好友列表页面（简化版）
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../extensions/l10n_extension.dart';
 
 class FriendScreen extends StatefulWidget {
   const FriendScreen({super.key});
@@ -12,9 +13,9 @@ class FriendScreen extends StatefulWidget {
 class _FriendScreenState extends State<FriendScreen> {
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.confirm)),
+      appBar: AppBar(title: Text(context.l10n.confirm)),
       body: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

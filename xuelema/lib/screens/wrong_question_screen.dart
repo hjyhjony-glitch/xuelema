@@ -1,6 +1,7 @@
 /// 错题本屏幕 - 完整的错题管理和复习功能
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../extensions/l10n_extension.dart';
 import '../models/wrong_question_model.dart';
 import '../services/wrong_question_service.dart';
 import 'practice_screen.dart';
@@ -112,7 +113,7 @@ class _WrongQuestionScreenState extends State<WrongQuestionScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.confirm),
+            child: Text(context.l10n.confirm),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
@@ -135,13 +136,13 @@ class _WrongQuestionScreenState extends State<WrongQuestionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    
     // 获取所有科目
     final subjects = {'全部', ..._allQuestions.map((q) => q.subject)};
     
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.wrongQuestionBank),
+        title: Text(context.l10n.wrongQuestionBank),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_sweep),
@@ -410,7 +411,7 @@ class _WrongQuestionScreenState extends State<WrongQuestionScreen> {
                       child: OutlinedButton.icon(
                         onPressed: () => _deleteQuestion(question),
                         icon: const Icon(Icons.delete),
-                        label: Text(l10n.confirm),
+                        label: Text(context.l10n.confirm),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Colors.red,
                         ),

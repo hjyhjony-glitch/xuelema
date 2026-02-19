@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'dart:io';
 import '../l10n/app_localizations.dart';
+import '../extensions/l10n_extension.dart';
 
 class OcrScreen extends StatefulWidget {
   const OcrScreen({super.key});

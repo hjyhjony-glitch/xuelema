@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../l10n/app_localizations.dart';
+import '../extensions/l10n_extension.dart';
 
 class GoalSettingScreen extends StatefulWidget {
   const GoalSettingScreen({super.key});
@@ -72,7 +73,7 @@ class _GoalSettingScreenState extends State<GoalSettingScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(l10n.confirm),
+            child: Text(context.l10n.confirm),
           ),
           ElevatedButton(
             onPressed: () {
@@ -98,11 +99,11 @@ class _GoalSettingScreenState extends State<GoalSettingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    
     
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.goalSetting),
+        title: Text(context.l10n.goalSetting),
         actions: [
           TextButton(
             onPressed: _resetToDefaults,
@@ -110,7 +111,7 @@ class _GoalSettingScreenState extends State<GoalSettingScreen> {
           ),
           ElevatedButton(
             onPressed: _saveSettings,
-            child: Text(l10n.confirm),
+            child: Text(context.l10n.confirm),
           ),
         ],
       ),

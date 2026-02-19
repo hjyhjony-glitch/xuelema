@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../services/wrong_question_service.dart';
 import '../services/notification_service.dart';
 import '../l10n/app_localizations.dart';
+import '../extensions/l10n_extension.dart';
 import '../models/review_model.dart';
 import 'practice_screen.dart';
 
@@ -73,20 +74,20 @@ class _ReviewScreenState extends State<ReviewScreen> {
 
   Future<void> _setupReminder() async {
     // 获取本地化字符串
-    final l10n = AppLocalizations.of(context);
+    
     
     // 设置复习提醒
     await _notificationService.scheduleDailyNotification(
       id: 4,
-      title: l10n.review,
-      body: l10n.dailyReview,
+      title: context.l10n.review,
+      body: context.l10n.dailyReview,
       time: const TimeOfDay(hour: 20, minute: 0),
       payload: 'review',
     );
     
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.dailyReminder)),
+        SnackBar(content: Text(context.l10n.dailyReminder)),
       );
     }
   }
@@ -104,16 +105,16 @@ class _ReviewScreenState extends State<ReviewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    
     
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.review),
+        title: Text(context.l10n.review),
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications),
             onPressed: _setupReminder,
-            tooltip: l10n.notifications,
+            tooltip: context.l10n.notifications,
           ),
         ],
       ),
@@ -130,9 +131,9 @@ class _ReviewScreenState extends State<ReviewScreen> {
                       padding: const EdgeInsets.all(16),
                       child: Column(
                         children: [
-                          Text(l10n.dailyReview, style: Theme.of(context).textTheme.titleLarge),
+                          Text(context.l10n.dailyReview, style: Theme.of(context).textTheme.titleLarge),
                           const SizedBox(height: 8),
-                          Text('${l10n.totalQuestions(_todayReviews.length)}', 
+                          Text('${context.l10n.totalQuestions(_todayReviews.length)}', 
                               style: Theme.of(context).textTheme.headlineMedium),
                         ],
                       ),
@@ -145,11 +146,11 @@ class _ReviewScreenState extends State<ReviewScreen> {
                   Card(
                     child: ListTile(
                       leading: const Icon(Icons.notifications),
-                      title: Text(l10n.dailyReminder),
-                      subtitle: Text(l10n.dailyReminder),
+                      title: Text(context.l10n.dailyReminder),
+                      subtitle: Text(context.l10n.dailyReminder),
                       trailing: ElevatedButton(
                         onPressed: _setupReminder,
-                        child: Text(l10n.save),
+                        child: Text(context.l10n.save),
                       ),
                     ),
                   ),
@@ -158,16 +159,16 @@ class _ReviewScreenState extends State<ReviewScreen> {
                   
                   // 今日复习列表
                   if (_todayReviews.isNotEmpty) ...[
-                    Text(l10n.dailyReview, style: Theme.of(context).textTheme.titleMedium),
+                    Text(context.l10n.dailyReview, style: Theme.of(context).textTheme.titleMedium),
                     const SizedBox(height: 8),
                     ..._todayReviews.map((item) => Card(
                       child: ListTile(
                         leading: Icon(_getSubjectIcon(item.subject)),
                         title: Text(item.title),
-                        subtitle: Text('${item.subject} · ${l10n.review}'),
+                        subtitle: Text('${item.subject} · ${context.l10n.review}'),
                         trailing: ElevatedButton(
                           onPressed: () => _startReview(item),
-                          child: Text(l10n.startQuiz),
+                          child: Text(context.l10n.startQuiz),
                         ),
                       ),
                     )).toList(),
@@ -179,9 +180,9 @@ class _ReviewScreenState extends State<ReviewScreen> {
                           children: [
                             Icon(Icons.check_circle_outline, size: 64, color: Colors.green),
                             const SizedBox(height: 16),
-                            Text(l10n.noTasksToday),
+                            Text(context.l10n.noTasksToday),
                             const SizedBox(height: 8),
-                            Text(l10n.restOrAddTask, 
+                            Text(context.l10n.restOrAddTask, 
                                 style: TextStyle(color: Colors.grey[600])),
                           ],
                         ),

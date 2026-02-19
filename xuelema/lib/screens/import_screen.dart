@@ -2,6 +2,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../extensions/l10n_extension.dart';
 import 'package:file_picker/file_picker.dart';
 
 class ImportScreen extends StatefulWidget {
@@ -17,10 +18,10 @@ class _ImportScreenState extends State<ImportScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    
     
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.importTitle)),
+      appBar: AppBar(title: Text(context.l10n.importTitle)),
       body: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
@@ -40,7 +41,7 @@ class _ImportScreenState extends State<ImportScreen> {
             ElevatedButton.icon(
               onPressed: _pickFile,
               icon: Icon(Icons.folder_open),
-              label: Text(l10n.selectFileButton),
+              label: Text(context.l10n.selectFileButton),
             ),
             SizedBox(height: 16),
             if (_isImporting) CircularProgressIndicator(),

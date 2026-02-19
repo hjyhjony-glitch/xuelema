@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import '../l10n/app_localizations.dart';
+import '../extensions/l10n_extension.dart';
 
 class Task {
   final String id;

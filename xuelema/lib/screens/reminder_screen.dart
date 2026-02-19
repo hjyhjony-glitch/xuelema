@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../l10n/app_localizations.dart';
+import '../extensions/l10n_extension.dart';
 import '../services/notification_service.dart';
 
 class ReminderScreen extends StatefulWidget {
@@ -88,7 +89,7 @@ class _ReminderScreenState extends State<ReminderScreen> {
     if (_reviewReminderEnabled) {
       await _notificationService.scheduleDailyNotification(
         id: 4,
-        title: l10n.dailyReminder,
+        title: context.l10n.dailyReminder,
         body: '及时复习能更好地记住知识',
         time: _reviewReminderTime,
         payload: 'review',
@@ -138,7 +139,7 @@ class _ReminderScreenState extends State<ReminderScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(l10n.confirm),
+            child: Text(context.l10n.confirm),
           ),
         ],
       ),
@@ -147,11 +148,11 @@ class _ReminderScreenState extends State<ReminderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    
     
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.reminderSettings),
+        title: Text(context.l10n.reminderSettings),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),

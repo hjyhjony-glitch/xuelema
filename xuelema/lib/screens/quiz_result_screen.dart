@@ -1,6 +1,7 @@
 /// 测验结果屏幕 - 完整的学习成果展示
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../extensions/l10n_extension.dart';
 
 class QuizResultScreen extends StatefulWidget {
   final int totalQuestions;
@@ -67,7 +68,7 @@ class _QuizResultScreenState extends State<QuizResultScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.quizResults),
+        title: Text(context.l10n.quizResults),
         automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(
@@ -132,13 +133,13 @@ class _QuizResultScreenState extends State<QuizResultScreen> {
                         _buildStatItem(
                           Icons.check_circle,
                           '${widget.correctCount}',
-                          l10n.correct,
+                          context.l10n.correct,
                           Colors.green,
                         ),
                         _buildStatItem(
                           Icons.cancel,
                           '$wrongCount',
-                          l10n.wrong,
+                          context.l10n.wrong,
                           Colors.red,
                         ),
                         _buildStatItem(
@@ -197,7 +198,7 @@ class _QuizResultScreenState extends State<QuizResultScreen> {
                         ),
                       ),
                       Text(
-                        l10n.correct,
+                        context.l10n.correct,
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey[600],

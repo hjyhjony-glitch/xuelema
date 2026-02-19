@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../extensions/l10n_extension.dart';
 import '../models/task_model.dart';
 import '../services/task_service.dart';
 import '../services/streak_service.dart';
@@ -65,22 +66,20 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadData(); // 刷新数据
     
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${l10n.taskCompleted}: ${task.title}')),
+      SnackBar(content: Text('${context.context.l10n.taskCompleted}: ${task.title}')),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.appTitle),
+        title: Text(context.context.l10n.appTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _loadData,
-            tooltip: l10n.refresh,
+            tooltip: context.context.l10n.refresh,
           ),
         ],
       ),
@@ -100,18 +99,18 @@ class _HomeScreenState extends State<HomeScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              _buildStatCard(l10n.todayTasksLabel, '${_todayTasks.length}', Icons.list),
-                              _buildStatCard(l10n.streak, '$_streakDays', Icons.star),
-                              _buildStatCard(l10n.completionRate, '${_taskStats['completionRate']}%', Icons.check_circle),
+                              _buildStatCard(context.l10n.todayTasksLabel, '${_todayTasks.length}', Icons.list),
+                              _buildStatCard(context.l10n.streak, '$_streakDays', Icons.star),
+                              _buildStatCard(context.l10n.completionRate, '${_taskStats['completionRate']}%', Icons.check_circle),
                             ],
                           ),
                           const SizedBox(height: 8),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              _buildStatCard(l10n.total, '${_taskStats['total']}', Icons.stacked_bar_chart),
-                              _buildStatCard(l10n.completedTask, '${_taskStats['completed']}', Icons.done_all),
-                              _buildStatCard(l10n.highPriority, '${_taskStats['highPriority']}', Icons.priority_high),
+                              _buildStatCard(context.l10n.total, '${_taskStats['total']}', Icons.stacked_bar_chart),
+                              _buildStatCard(context.l10n.completedTask, '${_taskStats['completed']}', Icons.done_all),
+                              _buildStatCard(context.l10n.highPriority, '${_taskStats['highPriority']}', Icons.priority_high),
                             ],
                           ),
                         ],
@@ -125,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('${l10n.todayTasksLabel} (${_todayTasks.length})', 
+                      Text('${context.l10n.todayTasksLabel} (${_todayTasks.length})', 
                           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                       if (_todayTasks.isNotEmpty)
                         TextButton(
@@ -137,7 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               }
                             }
                           },
-                          child: Text(l10n.confirm),
+                          child: Text(context.l10n.confirm),
                         ),
                     ],
                   ),
@@ -153,13 +152,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             const Icon(Icons.check_circle_outline, size: 64, color: Colors.green),
                             const SizedBox(height: 16),
-                            Text(l10n.noTasksToday, style: const TextStyle(fontSize: 16)),
+                            Text(context.l10n.noTasksToday, style: const TextStyle(fontSize: 16)),
                             const SizedBox(height: 8),
-                            Text(l10n.restOrAddTask, style: TextStyle(fontSize: 14, color: Colors.grey[600])),
+                            Text(context.l10n.restOrAddTask, style: TextStyle(fontSize: 14, color: Colors.grey[600])),
                             const SizedBox(height: 16),
                             ElevatedButton(
                               onPressed: () => Navigator.pushNamed(context, '/tasks'),
-                              child: Text(l10n.confirm),
+                              child: Text(context.l10n.confirm),
                             ),
                           ],
                         ),
@@ -212,7 +211,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 icon: const Icon(Icons.check_circle_outline, size: 24),
                                 color: Colors.grey[400],
                                 onPressed: () => _completeTask(task),
-                                tooltip: l10n.completedTask,
+                                tooltip: context.l10n.completedTask,
                               ),
                         onTap: () {
                           // 暂时用简单方式展示详情
@@ -245,7 +244,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(context),
-                                  child: Text(l10n.confirm),
+                                  child: Text(context.l10n.confirm),
                                 ),
                               ],
                             ),
@@ -258,10 +257,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
       bottomNavigationBar: BottomNavigationBar(
         items: [
-          BottomNavigationBarItem(icon: const Icon(Icons.home), label: l10n.home),
-          BottomNavigationBarItem(icon: const Icon(Icons.list), label: l10n.tasks),
-          BottomNavigationBarItem(icon: const Icon(Icons.timer), label: l10n.focusMode),
-          BottomNavigationBarItem(icon: const Icon(Icons.person), label: l10n.profile),
+          BottomNavigationBarItem(icon: const Icon(Icons.home), label: context.l10n.home),
+          BottomNavigationBarItem(icon: const Icon(Icons.list), label: context.l10n.tasks),
+          BottomNavigationBarItem(icon: const Icon(Icons.timer), label: context.l10n.focusMode),
+          BottomNavigationBarItem(icon: const Icon(Icons.person), label: context.l10n.profile),
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
@@ -286,7 +285,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showAddTaskDialog(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    
     final now = DateTime.now();
     final textController = TextEditingController();
     final descController = TextEditingController();
@@ -296,7 +295,7 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: Text(l10n.confirm),
+          title: Text(context.l10n.confirm),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -324,21 +323,21 @@ class _HomeScreenState extends State<HomeScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     ChoiceChip(
-                      label: Text(l10n.confirm),
+                      label: Text(context.l10n.confirm),
                       selected: priority == 1,
                       onSelected: (selected) {
                         setState(() => priority = 1);
                       },
                     ),
                     ChoiceChip(
-                      label: Text(l10n.confirm),
+                      label: Text(context.l10n.confirm),
                       selected: priority == 2,
                       onSelected: (selected) {
                         setState(() => priority = 2);
                       },
                     ),
                     ChoiceChip(
-                      label: Text(l10n.confirm),
+                      label: Text(context.l10n.confirm),
                       selected: priority == 3,
                       onSelected: (selected) {
                         setState(() => priority = 3);
@@ -352,13 +351,13 @@ class _HomeScreenState extends State<HomeScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text(l10n.confirm),
+              child: Text(context.l10n.confirm),
             ),
             ElevatedButton(
               onPressed: () async {
                 if (textController.text.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text(l10n.confirm)),
+                    const SnackBar(content: Text(context.l10n.confirm)),
                   );
                   return;
                 }
@@ -379,7 +378,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   SnackBar(content: Text('已添加任务: ${task.title}')),
                 );
               },
-              child: Text(l10n.confirm),
+              child: Text(context.l10n.confirm),
             ),
           ],
         ),

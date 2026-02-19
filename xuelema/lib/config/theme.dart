@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../extensions/l10n_extension.dart';
 
 class AppTheme {
   static const Color primaryColor = Color(0xFF4CAF50); // 绿色

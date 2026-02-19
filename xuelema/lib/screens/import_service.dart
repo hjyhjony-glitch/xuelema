@@ -3,6 +3,7 @@ import 'package:csv/csv.dart';
 import 'package:excel/excel.dart';
 import 'dart:convert';
 import '../l10n/app_localizations.dart';
+import '../extensions/l10n_extension.dart';
 
 /// 导入服务
 class ImportService {

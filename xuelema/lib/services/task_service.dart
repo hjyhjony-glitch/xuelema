@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/task_model.dart';
 import 'notification_service.dart';
 import '../l10n/app_localizations.dart';
+import '../extensions/l10n_extension.dart';
 
 class TaskService {
   static const String _tasksKey = 'user_tasks';

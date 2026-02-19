@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'ocr_screen.dart';
 import '../l10n/app_localizations.dart';
+import '../extensions/l10n_extension.dart';
 
 /// OCR快捷按钮组件
 class OcrButton extends StatelessWidget {

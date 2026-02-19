@@ -1,6 +1,7 @@
 /// 每日复习屏幕 - 完整的复习流程界面
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../extensions/l10n_extension.dart';
 import '../services/wrong_question_service.dart';
 import '../models/review_model.dart';
 import 'quiz_result_screen.dart';
@@ -76,7 +77,7 @@ class _DailyReviewScreenState extends State<DailyReviewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    
     final currentItem = widget.reviewItems[_currentIndex];
     final progress = (_currentIndex + 1) / widget.reviewItems.length;
 
@@ -100,7 +101,7 @@ class _DailyReviewScreenState extends State<DailyReviewScreen> {
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
-                      '${l10n.correct}: $_correctCount',
+                      '${context.l10n.correct}: $_correctCount',
                       style: const TextStyle(color: Colors.green),
                     ),
                   ),
@@ -112,7 +113,7 @@ class _DailyReviewScreenState extends State<DailyReviewScreen> {
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
-                      '${l10n.wrong}: $_wrongCount',
+                      '${context.l10n.wrong}: $_wrongCount',
                       style: const TextStyle(color: Colors.red),
                     ),
                   ),
@@ -379,12 +380,12 @@ class _DailyReviewScreenState extends State<DailyReviewScreen> {
   }
 
   void _showExitConfirmDialog(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    
     
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(l10n.confirmExit),
+        title: Text(context.l10n.confirmExit),
         content: Text('确定要退出复习吗？已复习 $_currentIndex/${widget.reviewItems.length} 个'),
         actions: [
           TextButton(
@@ -397,7 +398,7 @@ class _DailyReviewScreenState extends State<DailyReviewScreen> {
               Navigator.pop(context);
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: Text(l10n.exit),
+            child: Text(context.l10n.exit),
           ),
         ],
       ),

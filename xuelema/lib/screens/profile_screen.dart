@@ -1,6 +1,7 @@
 /// 个人中心屏幕（完整版） - 包含定时提醒入口
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../extensions/l10n_extension.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -12,10 +13,10 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    
     
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.profileCenter)),
+      appBar: AppBar(title: Text(context.l10n.profileCenter)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -30,8 +31,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(l10n.username, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                      Text(l10n.normalUser),
+                      Text(context.l10n.username, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      Text(context.l10n.normalUser),
                     ],
                   ),
                   const Spacer(),
@@ -100,7 +101,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const Divider(height: 1),
                 _buildItem(
                   icon: Icons.settings,
-                  title: l10n.generalSettings,
+                  title: context.l10n.generalSettings,
                   subtitle: '应用主题、语言等设置',
                   onTap: () => _showComingSoon(context, '通用设置'),
                 ),
@@ -159,7 +160,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           OutlinedButton.icon(
             onPressed: () => _showLogoutConfirm(context),
             icon: const Icon(Icons.exit_to_app),
-            label: Text(l10n.confirm),
+            label: Text(context.l10n.confirm),
             style: OutlinedButton.styleFrom(
               minimumSize: const Size(double.infinity, 48),
               foregroundColor: Colors.red,
@@ -239,7 +240,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(l10n.confirm),
+            child: Text(context.l10n.confirm),
           ),
           ElevatedButton(
             onPressed: () {
@@ -248,7 +249,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const SnackBar(content: Text('个人资料已更新')),
               );
             },
-            child: Text(l10n.confirm),
+            child: Text(context.l10n.confirm),
           ),
         ],
       ),
@@ -298,7 +299,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(l10n.confirm),
+            child: Text(context.l10n.confirm),
           ),
         ],
       ),
@@ -309,12 +310,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(l10n.confirm),
+        title: Text(context.l10n.confirm),
         content: const Text('确定要退出登录吗？退出后将清除本地数据。'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(l10n.confirm),
+            child: Text(context.l10n.confirm),
           ),
           ElevatedButton(
             onPressed: () {
@@ -324,7 +325,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               );
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: Text(l10n.confirm),
+            child: Text(context.l10n.confirm),
           ),
         ],
       ),

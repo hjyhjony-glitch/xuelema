@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../extensions/l10n_extension.dart';
 import '../models/task_model.dart';
 import '../services/task_service.dart';
 
@@ -31,11 +32,11 @@ class _TaskListScreenState extends State<TaskListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    
     
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.taskList),
+        title: Text(context.l10n.taskList),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
@@ -44,7 +45,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _tasks.isEmpty
-              ? Center(child: Text(l10n.noTasksMessage))
+              ? Center(child: Text(context.l10n.noTasksMessage))
               : ListView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: _tasks.length,

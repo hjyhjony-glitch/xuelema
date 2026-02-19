@@ -1,6 +1,7 @@
 /// 设置页面（简化版）
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../extensions/l10n_extension.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -12,22 +13,22 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    
     
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.settings)),
+      appBar: AppBar(title: Text(context.l10n.settings)),
       body: ListView(
         padding: EdgeInsets.all(16),
         children: [
-          _buildSection(l10n.general, [
-            _buildItem(Icons.notifications, l10n.notificationSettings, () {}),
-            _buildItem(Icons.dark_mode, l10n.darkMode, () {}),
-            _buildItem(Icons.language, l10n.languageSettings, () {}),
+          _buildSection(context.l10n.general, [
+            _buildItem(Icons.notifications, context.l10n.notificationSettings, () {}),
+            _buildItem(Icons.dark_mode, context.l10n.darkMode, () {}),
+            _buildItem(Icons.language, context.l10n.languageSettings, () {}),
           ]),
           SizedBox(height: 16),
-          _buildSection(l10n.aboutSection, [
-            _buildItem(Icons.info, l10n.versionInfo, () {}),
-            _buildItem(Icons.help, l10n.helpCenter, () {}),
+          _buildSection(context.l10n.aboutSection, [
+            _buildItem(Icons.info, context.l10n.versionInfo, () {}),
+            _buildItem(Icons.help, context.l10n.helpCenter, () {}),
           ]),
         ],
       ),

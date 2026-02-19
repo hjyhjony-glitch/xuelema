@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import '../models/task_model.dart';
 import '../l10n/app_localizations.dart';
+import '../extensions/l10n_extension.dart';
 
 class TaskCard extends StatelessWidget {
   final Task task;

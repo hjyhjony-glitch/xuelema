@@ -1,6 +1,7 @@
 /// 测验屏幕（简化版）
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../extensions/l10n_extension.dart';
 
 class QuizScreen extends StatefulWidget {
   const QuizScreen({super.key});
@@ -12,9 +13,9 @@ class QuizScreen extends StatefulWidget {
 class _QuizScreenState extends State<QuizScreen> {
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.confirm)),
+      appBar: AppBar(title: Text(context.l10n.confirm)),
       body: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

@@ -3,6 +3,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 import '../l10n/app_localizations.dart';
+import '../extensions/l10n_extension.dart';
 
 /// 通知服务 - 处理定时提醒功能
 class NotificationService {

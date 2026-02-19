@@ -1,6 +1,7 @@
 /// 练习屏幕 - 完整的学习练习功能
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../extensions/l10n_extension.dart';
 import '../models/wrong_question_model.dart';
 import '../services/wrong_question_service.dart';
 import 'quiz_result_screen.dart';
@@ -132,22 +133,22 @@ class _PracticeScreenState extends State<PracticeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    
     
     if (widget.questions.isEmpty) {
       return Scaffold(
-        appBar: AppBar(title: Text(l10n.practice)),
+        appBar: AppBar(title: Text(context.l10n.practice)),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(Icons.quiz, size: 64, color: Colors.grey),
               const SizedBox(height: 16),
-              Text(l10n.noQuestionsMessage),
+              Text(context.l10n.noQuestionsMessage),
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text(l10n.backButton),
+                child: Text(context.l10n.backButton),
               ),
             ],
           ),
@@ -160,13 +161,13 @@ class _PracticeScreenState extends State<PracticeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${l10n.practice} - ${_currentIndex + 1}/${widget.questions.length}'),
+        title: Text('${context.l10n.practice} - ${_currentIndex + 1}/${widget.questions.length}'),
         actions: [
           Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                '${l10n.correct}: $_correctCount  ${l10n.wrong}: $_wrongCount',
+                '${context.l10n.correct}: $_correctCount  ${context.l10n.wrong}: $_wrongCount',
                 style: TextStyle(
                   color: _correctCount > _wrongCount ? Colors.green : Colors.orange,
                   fontWeight: FontWeight.bold,
@@ -368,7 +369,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                   ElevatedButton.icon(
                     onPressed: _nextQuestion,
                     icon: const Icon(Icons.arrow_forward),
-                    label: Text(l10n.confirm),
+                    label: Text(context.l10n.confirm),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                     ),
@@ -377,7 +378,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                   ElevatedButton.icon(
                     onPressed: _showResults,
                     icon: const Icon(Icons.done_all),
-                    label: Text(l10n.confirm),
+                    label: Text(context.l10n.confirm),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                     ),

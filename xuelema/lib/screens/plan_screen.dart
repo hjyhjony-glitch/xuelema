@@ -1,6 +1,7 @@
 /// 计划屏幕（简化版）
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../extensions/l10n_extension.dart';
 
 class PlanScreen extends StatefulWidget {
   const PlanScreen({super.key});
