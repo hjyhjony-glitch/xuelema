@@ -53,9 +53,12 @@ class _HomeScreenState extends State<HomeScreen> {
         Navigator.pushNamed(context, '/tasks');
         break;
       case 2:
-        Navigator.pushNamed(context, '/focus');
+        Navigator.pushNamed(context, '/quiz');
         break;
       case 3:
+        Navigator.pushNamed(context, '/focus');
+        break;
+      case 4:
         Navigator.pushNamed(context, '/profile');
         break;
     }
@@ -117,6 +120,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
+                  
+                  const SizedBox(height: 16),
+                  
+                  // 功能入口卡片
+                  _buildFeatureCards(context),
                   
                   const SizedBox(height: 16),
                   
@@ -258,7 +266,8 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(icon: const Icon(Icons.home), label: context.l10n.home),
-          BottomNavigationBarItem(icon: const Icon(Icons.list), label: context.l10n.tasks),
+          BottomNavigationBarItem(icon: const Icon(Icons.list_alt), label: context.l10n.tasks),
+          BottomNavigationBarItem(icon: const Icon(Icons.quiz), label: context.l10n.quiz),
           BottomNavigationBarItem(icon: const Icon(Icons.timer), label: context.l10n.focusMode),
           BottomNavigationBarItem(icon: const Icon(Icons.person), label: context.l10n.profile),
         ],
@@ -281,6 +290,88 @@ class _HomeScreenState extends State<HomeScreen> {
         Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         Text(title, style: const TextStyle(fontSize: 12, color: Colors.grey)),
       ],
+    );
+  }
+
+  Widget _buildFeatureCards(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // 功能入口标题
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 8),
+          child: Text('快捷入口', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[700])),
+        ),
+        // 功能卡片网格
+        GridView.count(
+          shrinkWrap: true,
+          crossAxisCount: 3,
+          crossAxisSpacing: 8,
+          mainAxisSpacing: 8,
+          physics: const NeverScrollableScrollPhysics(),
+          children: [
+            _buildFeatureCard(
+              icon: Icons.flag,
+              label: '目标设定',
+              onTap: () => Navigator.pushNamed(context, '/goals'),
+            ),
+            _buildFeatureCard(
+              icon: Icons.rate_review,
+              label: '复习计划',
+              onTap: () => Navigator.pushNamed(context, '/review'),
+            ),
+            _buildFeatureCard(
+              icon: Icons.error,
+              label: '错题本',
+              onTap: () => Navigator.pushNamed(context, '/wrong'),
+            ),
+            _buildFeatureCard(
+              icon: Icons.library_books,
+              label: '资源库',
+              onTap: () => Navigator.pushNamed(context, '/import'),
+            ),
+            _buildFeatureCard(
+              icon: Icons.camera_alt,
+              label: 'OCR识别',
+              onTap: () => Navigator.pushNamed(context, '/ocr'),
+            ),
+            _buildFeatureCard(
+              icon: Icons.notifications,
+              label: '提醒设置',
+              onTap: () => Navigator.pushNamed(context, '/reminders'),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFeatureCard({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.blue.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 28, color: Colors.blue),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
     );
   }
 
