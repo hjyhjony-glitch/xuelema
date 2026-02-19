@@ -1,0 +1,56 @@
+name: Security Scan
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  schedule:
+    - cron: '0 2 * * 1' # Every Monday at 2 AM
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Check for secrets
+      run: |
+        # Simple check for common secret patterns
+        echo "Checking for potential secrets..."
+        PATTERNS=(
+          "password.*="
+          "api.*key"
+          "secret.*="
+          "token.*="
+          "auth.*="
+          "bearer.*="
+          "client_secret"
+          "private.*key"
+        )
+        
+        for pattern in "${PATTERNS[@]}"; do
+          if grep -r -i "$pattern" . --exclude-dir=.git --exclude-dir=node_modules | head -5; then
+            echo "⚠️  Warning: Potential secret pattern found: $pattern"
+          fi
+        done
+    
+    - name: Dependency check for Python
+      run: |
+        if [ -f "requirements.txt" ]; then
+          echo "Checking Python dependencies..."
+          pip install safety
+          safety check -r requirements.txt
+        else
+          echo "No requirements.txt found"
+        fi
+    
+    - name: Dependency check for Node.js
+      run: |
+        if [ -f "package.json" ]; then
+          echo "Checking Node.js dependencies..."
+          npm audit --audit-level=moderate
+        else
+          echo "No package.json found"
+        fi
