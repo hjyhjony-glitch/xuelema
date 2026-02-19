@@ -112,7 +112,7 @@ class _WrongQuestionScreenState extends State<WrongQuestionScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.$key),
+            child: Text(l10n.confirm),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
@@ -410,7 +410,7 @@ class _WrongQuestionScreenState extends State<WrongQuestionScreen> {
                       child: OutlinedButton.icon(
                         onPressed: () => _deleteQuestion(question),
                         icon: const Icon(Icons.delete),
-                        label: Text(l10n.$key),
+                        label: Text(l10n.confirm),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Colors.red,
                         ),

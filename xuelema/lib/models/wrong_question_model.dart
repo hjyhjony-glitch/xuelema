@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
+import '../l10n/app_localizations.dart';
 
 /// 错题模型
 class WrongQuestion {

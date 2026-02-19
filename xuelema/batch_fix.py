@@ -1,205 +1,133 @@
-#!/usr/bin/env python3
-"""
-批量修复所有dart文件中的硬编码中文字符串
-"""
-
 import os
 import re
-from pathlib import Path
 
-PROJECT_ROOT = Path("E:/OpenClaw_Workspace/xuelema")
+def fix_l10n_usage(file_path):
+    """修复文件中错误的 l10n 使用"""
+    
+    with open(file_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+    
+    original_content = content
+    
+    # 修复 l10n.$key 为合理的默认值
+    # 这里我们替换为具体的中文文本作为占位符
+    replacements = {
+        r'l10n\.\$key': 'l10n.confirm',  # 或其他合适的属性
+    }
+    
+    for pattern, replacement in replacements.items():
+        content = re.sub(pattern, replacement, content)
+    
+    if content != original_content:
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write(content)
+        print(f"Fixed: {file_path}")
 
-# 完整的中文到ARB键映射
-CHINESE_TO_KEY = {
-    # 基础UI
-    '刷新': 'refresh',
-    '设置': 'settings',
-    '添加': 'add',
-    '保存': 'save',
-    '取消': 'cancel',
-    '删除': 'delete',
-    '确定': 'ok',
-    '开始': 'start',
-    '暂停': 'pause',
-    '重置': 'reset',
-    '返回': 'back',
-    '关闭': 'close',
-    '完成': 'completed',
-    '继续': 'continueTimer',
-    '退出': 'exit',
-    '下一步': 'nextQuestion',
-    '提交': 'submit',
-    '跳过': 'skip',
-    '查看': 'viewResults',
+def check_and_fix_build_method(file_path):
+    """检查并修复缺少 l10n 定义的问题"""
     
-    # 任务
-    '任务': 'tasks',
-    '任务列表': 'taskList',
-    '任务详情': 'taskDetails',
-    '任务标题': 'taskTitle',
-    '任务描述': 'taskDescription',
-    '添加任务': 'addTask',
-    '暂无任务': 'noTasks',
-    '开始任务': 'start',
-    '完成任务': 'completedTask',
-    '未完成任务': 'notCompleted',
-    '删除任务': 'delete',
-    '编辑任务': 'editProfile',
-    '任务状态': 'status',
-    '截止时间': 'dueTime',
+    with open(file_path, 'r', encoding='utf-8') as f:
+        lines = f.readlines()
     
-    # 优先级
-    '优先级': 'priority',
-    '高': 'high',
-    '中': 'medium',
-    '低': 'low',
-    '高优先级': 'highPriority',
+    # 查找使用 l10n 但没有定义的地方
+    needs_l10n_definition = False
+    build_method_line = -1
+    last_import_line = -1
     
-    # 专注
-    '专注': 'focus',
-    '专注模式': 'focusMode',
-    '开始专注': 'startFocus',
-    '专注时间': 'focusTime',
-    '专注完成': 'focusCompleted',
-    '专注锁定': 'focusLocked',
-    '休息': 'rest',
-    '开始休息': 'startRest',
+    for i, line in enumerate(lines):
+        if 'import' in line and 'app_localizations' in line.lower():
+            last_import_line = i
+        if 'Widget build(' in line:
+            build_method_line = i
+            break
     
-    # 复习
-    '复习': 'review',
-    '复习计划': 'review',
-    '每日复习': 'dailyReview',
-    '每周复习': 'weeklyReview',
-    '每月复习': 'monthlyReview',
-    '复习提醒': 'dailyReminder',
-    '复习统计': 'statistics',
-    '今日复习': 'dailyReview',
-    
-    # 错题
-    '错题本': 'mistakeBook',
-    '错题': 'mistakes',
-    '错题集': 'wrongQuestionBank',
-    '错题详情': 'mistakeDetail',
-    '暂无错题': 'noQuestions',
-    
-    # 测验
-    '测验': 'quiz',
-    '开始测验': 'startQuiz',
-    '测验结果': 'quizResults',
-    '下一题': 'nextQuestion',
-    '正确答案': 'correctAnswer',
-    '你的答案': 'wrongAnswer',
-    '正确': 'correct',
-    '错误': 'wrong',
-    '得分': 'score',
-    
-    # 统计
-    '统计': 'statistics',
-    '总计时长': 'totalFocusTime',
-    '完成率': 'completionRate',
-    '连续学习': 'streak',
-    '学习天数': 'learningDays',
-    '今日任务': 'todayTasks',
-    '总计': 'total',
-    '已完成': 'completedTask',
-    '进度': 'progress',
-    
-    # 个人中心
-    '个人中心': 'profileCenter',
-    '我的信息': 'myInfo',
-    '用户名': 'username',
-    '积分': 'points',
-    '成就': 'achievements',
-    '学习统计': 'learningStats',
-    
-    # 设置
-    '通用设置': 'generalSettings',
-    '通知设置': 'notificationSettings',
-    '语言设置': 'languageSettings',
-    '深色模式': 'darkMode',
-    '关于': 'about',
-    '版本': 'version',
-    '清除缓存': 'clearCache',
-    
-    # 其他
-    '知识库': 'knowledgeBase',
-    '资源': 'resourceLibrary',
-    '好友': 'friends',
-    '小组': 'groups',
-    '导入': 'import',
-    '导出': 'export',
-    '确认': 'ok',
-    '提示': 'tips',
-    '成功': 'success',
-    '失败': 'failed',
-    'loading': 'loading',
-    '保存成功': 'save',
-    '保存失败': 'save',
-    '加载中': 'processing',
-    '请稍候': 'loading',
-}
+    # 检查 build 方法中是否使用了 l10n 但没有定义
+    if build_method_line >= 0:
+        build_method_content = ''.join(lines[build_method_line:build_method_line+50])
+        if 'l10n.' in build_method_content and 'final l10n = AppLocalizations.of(context)' not in build_method_content:
+            # 在 build 方法开头添加 l10n 定义
+            lines.insert(build_method_line + 1, '    final l10n = AppLocalizations.of(context);\n')
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.writelines(lines)
+            print(f"Added l10n definition to: {file_path}")
 
-def fix_file(file_path):
-    """修复单个文件"""
-    try:
-        content = file_path.read_text(encoding='utf-8')
-        original = content
+def remove_dangling_comments(file_path):
+    """移除悬空的库文档注释"""
+    
+    with open(file_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+    
+    # 移除开头的悬空文档注释
+    lines = content.split('\n')
+    fixed_lines = []
+    i = 0
+    
+    while i < len(lines):
+        line = lines[i]
+        # 如果是悬空的 /// 注释（不是文件顶部注释的一部分）
+        if line.strip().startswith('///') and not line.strip().startswith('/// '):
+            # 检查前一行是否是有效的注释或 dart 声明
+            if i == 0 or (i > 0 and not lines[i-1].strip().startswith('///')):
+                # 这是一个悬空注释，跳过它
+                i += 1
+                continue
         
-        # 修复模式1: const Text('中文')
-        for cn, key in CHINESE_TO_KEY.items():
-            if f"const Text('{cn}')" in content:
-                content = content.replace(f"const Text('{cn}')", f"Text(l10n.{key})")
+        # 检查是否有 dart 文件以 '///' 开头但没有包声明
+        if i == 0 and line.strip().startswith('///'):
+            # 检查是否有空行
+            if len(lines) > 1 and lines[1].strip() == '':
+                # 这可能是悬空注释
+                if 'import' in lines[2]:
+                    i += 1
+                    continue
         
-        # 修复模式2: Text('中文') - 非const
-        for cn, key in CHINESE_TO_KEY.items():
-            if f"Text('{cn}')" in content and f"const Text('{cn}')" not in content:
-                content = content.replace(f"Text('{cn}')", f"Text(l10n.{key})")
-        
-        # 修复模式3: title: '中文'
-        for cn, key in CHINESE_TO_KEY.items():
-            if f"title: '{cn}'" in content:
-                content = content.replace(f"title: '{cn}'", f"title: l10n.{key}")
-        
-        # 修复模式4: subtitle: '中文'  
-        for cn, key in CHINESE_TO_KEY.items():
-            if f"subtitle: '{cn}'" in content:
-                content = content.replace(f"subtitle: '{cn}'", f"subtitle: l10n.{key}")
-        
-        # 修复模式5: tooltip: '中文'
-        for cn, key in CHINESE_TO_KEY.items():
-            if f"tooltip: '{cn}'" in content:
-                content = content.replace(f"tooltip: '{cn}'", f"tooltip: l10n.{key}")
-        
-        # 修复模式6: AppBar title
-        for cn, key in CHINESE_TO_KEY.items():
-            if f"AppBar(title: const Text('{cn}')" in content:
-                content = content.replace(f"AppBar(title: const Text('{cn}')", f"AppBar(title: Text(l10n.{key})")
-        
-        if content != original:
-            file_path.write_text(content, encoding='utf-8')
-            return True
-    except Exception as e:
-        print(f"错误: {file_path} - {e}")
-    return False
+        fixed_lines.append(line)
+        i += 1
+    
+    if len(fixed_lines) != len(lines):
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write('\n'.join(fixed_lines))
+        print(f"Removed dangling comments from: {file_path}")
 
-def main():
-    print("开始批量修复...")
+def fix_async_build_context(file_path):
+    """修复异步方法中使用 BuildContext 的问题"""
     
-    screens_dir = PROJECT_ROOT / "lib" / "screens"
-    fixed = []
+    with open(file_path, 'r', encoding='utf-8') as f:
+        content = f.read()
     
-    for file_path in screens_dir.glob("*.dart"):
-        if fix_file(file_path):
-            fixed.append(file_path.name)
+    # 修复模式: 在 async 方法中使用 BuildContext
+    # 添加 mounted 检查
+    patterns = [
+        (r'(\S+)\(\) async \{', r'\1() async {\n    if (!mounted) return;'),
+    ]
     
-    print(f"\n修复了 {len(fixed)} 个文件:")
-    for f in fixed:
-        print(f"  - {f}")
+    for pattern, replacement in patterns:
+        content = re.sub(pattern, replacement, content)
     
-    if not fixed:
-        print("没有需要修复的文件")
-    
-    return len(fixed)
+    with open(file_path, 'w', encoding='utf-8') as f:
+        f.write(content)
 
-if __name__ == "__main__":
-    main()
+def process_directory(directory):
+    """处理目录中的所有 dart 文件"""
+    
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            if file.endswith('.dart'):
+                file_path = os.path.join(root, file)
+                
+                # 只处理 lib 目录下的文件
+                if 'lib' in file_path:
+                    try:
+                        remove_dangling_comments(file_path)
+                        check_and_fix_build_method(file_path)
+                        fix_l10n_usage(file_path)
+                    except Exception as e:
+                        print(f"Error processing {file_path}: {e}")
+
+if __name__ == '__main__':
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    lib_dir = os.path.join(base_dir, 'lib')
+    
+    print(f"Processing: {lib_dir}")
+    process_directory(lib_dir)
+    print("Done!")

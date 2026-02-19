@@ -159,7 +159,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           OutlinedButton.icon(
             onPressed: () => _showLogoutConfirm(context),
             icon: const Icon(Icons.exit_to_app),
-            label: Text(l10n.$key),
+            label: Text(l10n.confirm),
             style: OutlinedButton.styleFrom(
               minimumSize: const Size(double.infinity, 48),
               foregroundColor: Colors.red,
@@ -239,7 +239,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(l10n.$key),
+            child: Text(l10n.confirm),
           ),
           ElevatedButton(
             onPressed: () {
@@ -248,7 +248,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const SnackBar(content: Text('个人资料已更新')),
               );
             },
-            child: Text(l10n.$key),
+            child: Text(l10n.confirm),
           ),
         ],
       ),
@@ -298,7 +298,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(l10n.$key),
+            child: Text(l10n.confirm),
           ),
         ],
       ),
@@ -309,12 +309,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(l10n.$key),
+        title: Text(l10n.confirm),
         content: const Text('确定要退出登录吗？退出后将清除本地数据。'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(l10n.$key),
+            child: Text(l10n.confirm),
           ),
           ElevatedButton(
             onPressed: () {
@@ -324,7 +324,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               );
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: Text(l10n.$key),
+            child: Text(l10n.confirm),
           ),
         ],
       ),

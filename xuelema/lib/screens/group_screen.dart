@@ -1,5 +1,6 @@
 /// 小组页面（简化版）
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 class GroupScreen extends StatefulWidget {
   const GroupScreen({super.key});
@@ -11,8 +12,9 @@ class GroupScreen extends StatefulWidget {
 class _GroupScreenState extends State<GroupScreen> {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.$key)),
+      appBar: AppBar(title: Text(l10n.confirm)),
       body: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

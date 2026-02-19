@@ -1,5 +1,6 @@
 /// 资源详情页面（简化版）
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 class ResourceDetailScreen extends StatefulWidget {
   const ResourceDetailScreen({super.key});

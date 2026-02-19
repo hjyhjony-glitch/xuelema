@@ -29,7 +29,6 @@ class QuizResultScreen extends StatefulWidget {
 class _QuizResultScreenState extends State<QuizResultScreen> {
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
     final score = widget.totalQuestions > 0 
         ? (widget.correctCount / widget.totalQuestions * 100).round() 
         : 0;

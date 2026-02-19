@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/task_model.dart';
+import '../l10n/app_localizations.dart';
 
 class TaskDetailScreen extends StatefulWidget {
   final Task task;
@@ -13,10 +14,11 @@ class TaskDetailScreen extends StatefulWidget {
 class _TaskDetailScreenState extends State<TaskDetailScreen> {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final task = widget.task;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.$key)),
+      appBar: AppBar(title: Text(l10n.confirm)),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -35,12 +37,12 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
               children: [
                 ElevatedButton(
                   onPressed: () {},
-                  child: Text(l10n.$key),
+                  child: Text(l10n.confirm),
                 ),
                 const SizedBox(width: 16),
                 OutlinedButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text(l10n.$key),
+                  child: Text(l10n.confirm),
                 ),
               ],
             ),

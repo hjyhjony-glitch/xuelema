@@ -137,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               }
                             }
                           },
-                          child: Text(l10n.$key),
+                          child: Text(l10n.confirm),
                         ),
                     ],
                   ),
@@ -159,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             const SizedBox(height: 16),
                             ElevatedButton(
                               onPressed: () => Navigator.pushNamed(context, '/tasks'),
-                              child: Text(l10n.$key),
+                              child: Text(l10n.confirm),
                             ),
                           ],
                         ),
@@ -245,7 +245,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(context),
-                                  child: Text(l10n.$key),
+                                  child: Text(l10n.confirm),
                                 ),
                               ],
                             ),
@@ -296,7 +296,7 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: Text(l10n.$key),
+          title: Text(l10n.confirm),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -324,21 +324,21 @@ class _HomeScreenState extends State<HomeScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     ChoiceChip(
-                      label: Text(l10n.$key),
+                      label: Text(l10n.confirm),
                       selected: priority == 1,
                       onSelected: (selected) {
                         setState(() => priority = 1);
                       },
                     ),
                     ChoiceChip(
-                      label: Text(l10n.$key),
+                      label: Text(l10n.confirm),
                       selected: priority == 2,
                       onSelected: (selected) {
                         setState(() => priority = 2);
                       },
                     ),
                     ChoiceChip(
-                      label: Text(l10n.$key),
+                      label: Text(l10n.confirm),
                       selected: priority == 3,
                       onSelected: (selected) {
                         setState(() => priority = 3);
@@ -352,13 +352,13 @@ class _HomeScreenState extends State<HomeScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text(l10n.$key),
+              child: Text(l10n.confirm),
             ),
             ElevatedButton(
               onPressed: () async {
                 if (textController.text.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text(l10n.$key)),
+                    const SnackBar(content: Text(l10n.confirm)),
                   );
                   return;
                 }
@@ -379,7 +379,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   SnackBar(content: Text('已添加任务: ${task.title}')),
                 );
               },
-              child: Text(l10n.$key),
+              child: Text(l10n.confirm),
             ),
           ],
         ),

@@ -72,7 +72,7 @@ class _GoalSettingScreenState extends State<GoalSettingScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(l10n.$key),
+            child: Text(l10n.confirm),
           ),
           ElevatedButton(
             onPressed: () {
@@ -110,7 +110,7 @@ class _GoalSettingScreenState extends State<GoalSettingScreen> {
           ),
           ElevatedButton(
             onPressed: _saveSettings,
-            child: Text(l10n.$key),
+            child: Text(l10n.confirm),
           ),
         ],
       ),

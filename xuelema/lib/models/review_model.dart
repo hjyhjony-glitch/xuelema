@@ -85,3 +85,42 @@ class Review {
     );
   }
 }
+
+/// 复习项模型
+class ReviewItem {
+  final String id;
+  final String subject;
+  final String title;
+  final DateTime nextReviewDate;
+  final int reviewCount;
+
+  ReviewItem({
+    required this.id,
+    required this.subject,
+    required this.title,
+    required this.nextReviewDate,
+    this.reviewCount = 0,
+  });
+
+  factory ReviewItem.fromJson(Map<String, dynamic> json) {
+    return ReviewItem(
+      id: json['id'] ?? '',
+      subject: json['subject'] ?? '',
+      title: json['title'] ?? '',
+      nextReviewDate: json['nextReviewDate'] != null 
+          ? DateTime.parse(json['nextReviewDate']) 
+          : DateTime.now(),
+      reviewCount: json['reviewCount'] ?? 0,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'subject': subject,
+      'title': title,
+      'nextReviewDate': nextReviewDate.toIso8601String(),
+      'reviewCount': reviewCount,
+    };
+  }
+}

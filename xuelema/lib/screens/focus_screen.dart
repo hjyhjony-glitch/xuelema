@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../services/notification_service.dart';
+import '../l10n/app_localizations.dart';
 
 class FocusScreen extends StatefulWidget {
   const FocusScreen({super.key});
@@ -225,7 +226,7 @@ class _FocusScreenState extends State<FocusScreen> {
                     children: [
                       const Icon(Icons.refresh),
                       const SizedBox(width: 8),
-                      Text(l10n.$key),
+                      Text(l10n.confirm),
                     ],
                   ),
                 ),
@@ -263,7 +264,7 @@ class _FocusScreenState extends State<FocusScreen> {
             children: [
               ListTile(
                 leading: const Icon(Icons.timer),
-                title: Text(l10n.$key),
+                title: Text(l10n.confirm),
                 trailing: const Text('25分钟'),
                 onTap: () {
                   _selectFocusDuration(context);
@@ -297,7 +298,7 @@ class _FocusScreenState extends State<FocusScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(l10n.$key),
+            child: Text(l10n.confirm),
           ),
           ElevatedButton(
             onPressed: () {
@@ -306,7 +307,7 @@ class _FocusScreenState extends State<FocusScreen> {
                 const SnackBar(content: Text('定时提醒设置已保存')),
               );
             },
-            child: Text(l10n.$key),
+            child: Text(l10n.confirm),
           ),
         ],
       ),

@@ -1,5 +1,6 @@
 /// 本地存储服务
 import 'package:shared_preferences/shared_preferences.dart';
+import '../l10n/app_localizations.dart';
 
 class StorageService {
   static const String _storageKey = 'app_data';

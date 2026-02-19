@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../config/theme.dart';
+import '../l10n/app_localizations.dart';
 
 class TimerWidget extends StatefulWidget {
   final int totalSeconds;

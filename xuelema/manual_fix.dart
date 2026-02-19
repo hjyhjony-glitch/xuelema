@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 // 手动修复硬编码字符串的示例
 // 这是一个Dart文件，但我们可以用Python脚本来批量处理
 

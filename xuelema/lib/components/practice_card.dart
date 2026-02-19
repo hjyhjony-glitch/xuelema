@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 /// 练习卡片组件
 class PracticeCard extends StatefulWidget {

@@ -138,7 +138,7 @@ class _ReminderScreenState extends State<ReminderScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(l10n.$key),
+            child: Text(l10n.confirm),
           ),
         ],
       ),

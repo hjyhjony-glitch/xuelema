@@ -1,6 +1,7 @@
 /// OCR屏幕（简化版）
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../l10n/app_localizations.dart';
 
 class OcrScreen extends StatefulWidget {
   const OcrScreen({super.key});
@@ -14,8 +15,9 @@ class _OcrScreenState extends State<OcrScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.$key)),
+      appBar: AppBar(title: Text(l10n.confirm)),
       body: Column(
         children: [
           Expanded(
@@ -37,17 +39,17 @@ class _OcrScreenState extends State<OcrScreen> {
               ElevatedButton.icon(
                 onPressed: () {},
                 icon: const Icon(Icons.camera_alt),
-                label: Text(l10n.$key),
+                label: Text(l10n.confirm),
               ),
               ElevatedButton.icon(
                 onPressed: () {},
                 icon: const Icon(Icons.image),
-                label: Text(l10n.$key),
+                label: Text(l10n.confirm),
               ),
               ElevatedButton.icon(
                 onPressed: () {},
                 icon: const Icon(Icons.content_paste),
-                label: Text(l10n.$key),
+                label: Text(l10n.confirm),
               ),
             ],
           ),

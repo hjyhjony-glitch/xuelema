@@ -91,6 +91,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ok => 'OK';
 
   @override
+  String get confirm => 'Confirm';
+
+  @override
   String get overdue => 'Overdue';
 
   @override

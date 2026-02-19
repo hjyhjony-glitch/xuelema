@@ -1,5 +1,6 @@
 /// 家长页面（简化版）
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 class ParentScreen extends StatefulWidget {
   const ParentScreen({super.key});

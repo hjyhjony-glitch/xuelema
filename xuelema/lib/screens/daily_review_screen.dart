@@ -2,24 +2,8 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../services/wrong_question_service.dart';
+import '../models/review_model.dart';
 import 'quiz_result_screen.dart';
-
-/// 复习项模型
-class ReviewItem {
-  final String id;
-  final String subject;
-  final String title;
-  final DateTime nextReviewDate;
-  final int reviewCount;
-
-  ReviewItem({
-    required this.id,
-    required this.subject,
-    required this.title,
-    required this.nextReviewDate,
-    required this.reviewCount,
-  });
-}
 
 class DailyReviewScreen extends StatefulWidget {
   final List<ReviewItem> reviewItems;
@@ -395,10 +379,12 @@ class _DailyReviewScreenState extends State<DailyReviewScreen> {
   }
 
   void _showExitConfirmDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(l10n.$key),
+        title: Text(l10n.confirmExit),
         content: Text('确定要退出复习吗？已复习 $_currentIndex/${widget.reviewItems.length} 个'),
         actions: [
           TextButton(
@@ -411,7 +397,7 @@ class _DailyReviewScreenState extends State<DailyReviewScreen> {
               Navigator.pop(context);
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: Text(l10n.$key),
+            child: Text(l10n.exit),
           ),
         ],
       ),

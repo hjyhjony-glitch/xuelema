@@ -93,6 +93,7 @@ class NotificationService {
       '学了吗定时提醒',
       channelDescription: '定时学习任务提醒',
       importance: Importance.high,
+import '../l10n/app_localizations.dart';
       priority: Priority.high,
     );
     

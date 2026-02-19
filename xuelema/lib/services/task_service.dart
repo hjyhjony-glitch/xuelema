@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/task_model.dart';
 import 'notification_service.dart';
+import '../l10n/app_localizations.dart';
 
 class TaskService {
   static const String _tasksKey = 'user_tasks';

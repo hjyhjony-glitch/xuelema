@@ -5,6 +5,7 @@
 /// 当前pdf_import_service已禁用
 
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 class PdfImportScreen extends StatefulWidget {
   const PdfImportScreen({super.key});
@@ -16,6 +17,7 @@ class PdfImportScreen extends StatefulWidget {
 class _PdfImportScreenState extends State<PdfImportScreen> {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('PDF导入（暂时禁用）'),
@@ -32,7 +34,7 @@ class _PdfImportScreenState extends State<PdfImportScreen> {
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: () => Navigator.pop(context),
-              child: Text(l10n.$key),
+              child: Text(l10n.confirm),
             ),
           ],
         ),

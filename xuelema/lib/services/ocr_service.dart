@@ -1,8 +1,10 @@
+import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import '../l10n/app_localizations.dart';
 
 /// OCR文字识别服务
 class OcrService {

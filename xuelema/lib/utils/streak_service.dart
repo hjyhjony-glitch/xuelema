@@ -1,5 +1,6 @@
 /// 连续打卡服务（简化版）
 import 'package:shared_preferences/shared_preferences.dart';
+import '../l10n/app_localizations.dart';
 
 class StreakService {
   int _currentStreak = 0;

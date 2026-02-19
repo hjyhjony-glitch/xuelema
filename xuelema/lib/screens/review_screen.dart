@@ -72,6 +72,9 @@ class _ReviewScreenState extends State<ReviewScreen> {
   }
 
   Future<void> _setupReminder() async {
+    // 获取本地化字符串
+    final l10n = AppLocalizations.of(context);
+    
     // 设置复习提醒
     await _notificationService.scheduleDailyNotification(
       id: 4,

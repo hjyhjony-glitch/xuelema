@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/wrong_question_model.dart';
+import '../l10n/app_localizations.dart';
 
 /// 错题库服务
 class WrongQuestionService {

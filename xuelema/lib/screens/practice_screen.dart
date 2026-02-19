@@ -368,7 +368,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                   ElevatedButton.icon(
                     onPressed: _nextQuestion,
                     icon: const Icon(Icons.arrow_forward),
-                    label: Text(l10n.$key),
+                    label: Text(l10n.confirm),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                     ),
@@ -377,7 +377,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                   ElevatedButton.icon(
                     onPressed: _showResults,
                     icon: const Icon(Icons.done_all),
-                    label: Text(l10n.$key),
+                    label: Text(l10n.confirm),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                     ),

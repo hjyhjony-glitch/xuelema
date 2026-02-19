@@ -1,6 +1,7 @@
 /// 任务卡片组件（简化版）
 import 'package:flutter/material.dart';
 import '../models/task_model.dart';
+import '../l10n/app_localizations.dart';
 
 class TaskCard extends StatelessWidget {
   final Task task;

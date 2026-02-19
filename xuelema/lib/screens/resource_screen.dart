@@ -1,5 +1,6 @@
 /// 资源页面（简化版）
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 class ResourceScreen extends StatefulWidget {
   const ResourceScreen({super.key});
@@ -11,8 +12,9 @@ class ResourceScreen extends StatefulWidget {
 class _ResourceScreenState extends State<ResourceScreen> {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.$key)),
+      appBar: AppBar(title: Text(l10n.confirm)),
       body: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

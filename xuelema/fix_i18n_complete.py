@@ -1,267 +1,155 @@
-#!/usr/bin/env python3
 """
-完整修复学了吗APP的国际化问题和Model导入缺失问题
+完整的 Flutter 项目 l10n 修复脚本
 """
-
 import os
 import re
-from pathlib import Path
 
-# 项目根目录
-PROJECT_ROOT = Path("E:/OpenClaw_Workspace/xuelema")
-
-# 中文字符串到ARB键的映射（更完整）
-CHINESE_MAPPINGS = {
-    # 通用字符串
-    '刷新': 'refresh',
-    '设置': 'settings',
-    '添加': 'add',
-    '保存': 'save',
-    '取消': 'cancel',
-    '删除': 'delete',
-    '确定': 'ok',
-    '开始': 'start',
-    '暂停': 'pause',
-    '重置': 'reset',
-    '返回': 'back',
-    '关闭': 'close',
-    '完成': 'completed',
-    '继续': 'continueTimer',
-    '退出': 'exit',
+def add_import_and_fix_l10n(file_path):
+    """添加导入并修复 l10n 定义"""
     
-    # 任务相关
-    '任务': 'tasks',
-    '今日任务': 'todayTasksLabel',
-    '任务列表': 'taskList',
-    '任务详情': 'taskDetails',
-    '任务标题': 'taskTitle',
-    '任务描述': 'taskDescription',
-    '优先级': 'priority',
-    '高': 'high',
-    '中': 'medium',
-    '低': 'low',
-    '截止时间': 'dueTime',
-    '开始专注': 'startFocus',
-    '专注模式': 'focusMode',
-    '专注': 'focus',
-    '休息': 'rest',
-    '开始休息': 'startRest',
+    with open(file_path, 'r', encoding='utf-8') as f:
+        lines = f.readlines()
     
-    # 统计相关
-    '连续学习': 'streak',
-    '今日任务': 'todayTasks',
-    '总计': 'total',
-    '已完成': 'completedTask',
-    '高优先级': 'highPriority',
-    '完成率': 'completionRate',
-    '统计': 'statistics',
-    '一键完成': 'completeAll',
-    '去添加任务': 'goAddTask',
-    
-    # 复习相关
-    '复习': 'review',
-    '复习计划': 'review',
-    '每日复习': 'dailyReview',
-    '开始复习': 'startQuiz',
-    '复习提醒': 'dailyReminder',
-    
-    # 错题相关
-    '错题本': 'mistakeBook',
-    '错题': 'mistakes',
-    '暂无错题': 'noQuestions',
-    
-    # 其他
-    '暂无任务': 'noTasksToday',
-    '今日没有任务': 'noTasksToday',
-    '休息一下或添加新任务': 'restOrAddTask',
-    '添加新任务': 'addNewTask',
-    '请输入任务名称': 'enterTaskName',
-    '请输入任务描述': 'enterTaskDescription',
-    '状态': 'status',
-    '未完成': 'notCompleted',
-    '完成时间': 'completedTime',
-    '提醒设置': 'reminderSettings',
-    '查看结果': 'viewResults',
-    '目标设置': 'goalSettings',
-    '设置提醒': 'notifications',
-}
-
-def fix_chinese_strings(content, filename):
-    """修复中文字符串"""
-    lines = content.split('\n')
-    fixed_lines = []
-    
+    # 检查是否已经有 AppLocalizations 导入
+    has_import = False
     for line in lines:
-        # 修复 const Text('中文') 模式
-        if "const Text('" in line or 'const Text("' in line:
-            for chinese, key in CHINESE_MAPPINGS.items():
-                if f"'{chinese}'" in line or f'"{chinese}"' in line:
-                    line = line.replace(f"const Text('{chinese}')", f"Text(l10n.{key})")
-                    line = line.replace(f'const Text("{chinese}")', f'Text(l10n.{key})')
-                    break
-        
-        # 修复 Text('中文') 模式（没有const）
-        if "Text('" in line and "const Text('" not in line:
-            for chinese, key in CHINESE_MAPPINGS.items():
-                if f"'{chinese}'" in line:
-                    line = line.replace(f"Text('{chinese}')", f"Text(l10n.{key})")
-                    break
-        
-        # 修复 tooltip: '中文'
-        if "tooltip: '" in line:
-            for chinese, key in CHINESE_MAPPINGS.items():
-                if f"tooltip: '{chinese}'" in line:
-                    line = line.replace(f"tooltip: '{chinese}'", f"tooltip: l10n.{key}")
-                    break
-        
-        # 修复 title: '中文'
-        if "title: '" in line:
-            for chinese, key in CHINESE_MAPPINGS.items():
-                if f"title: '{chinese}'" in line:
-                    line = line.replace(f"title: '{chinese}'", f"title: l10n.{key}")
-                    break
-        
-        # 修复 subtitle: '中文'
-        if "subtitle: '" in line:
-            for chinese, key in CHINESE_MAPPINGS.items():
-                if f"subtitle: '{chinese}'" in line:
-                    line = line.replace(f"subtitle: '{chinese}'", f"subtitle: l10n.{key}")
-                    break
-        
-        # 修复 appBar title
-        if "AppBar(title: const Text('" in line:
-            for chinese, key in CHINESE_MAPPINGS.items():
-                if f"AppBar(title: const Text('{chinese}')" in line:
-                    line = line.replace(f"AppBar(title: const Text('{chinese}')", f"AppBar(title: Text(l10n.{key})")
-                    break
-        
-        fixed_lines.append(line)
+        if 'app_localizations.dart' in line:
+            has_import = True
+            break
     
-    return '\n'.join(fixed_lines)
+    # 如果没有导入，添加它
+    if not has_import:
+        # 找到最后一个 import 语句的位置
+        last_import_idx = -1
+        for i, line in enumerate(lines):
+            if line.strip().startswith('import'):
+                last_import_idx = i
+        
+        if last_import_idx >= 0:
+            # 在最后一个导入后添加新导入
+            import_line = "import '../l10n/app_localizations.dart';\n"
+            lines.insert(last_import_idx + 1, import_line)
+            print(f"✅ Added import to: {os.path.basename(file_path)}")
+    
+    fixed = False
+    
+    for i, line in enumerate(lines):
+        # 查找 build 方法
+        if 'Widget build(' in line or 'build(BuildContext context)' in line:
+            # 检查后续 20 行内是否有 l10n 定义
+            build_content = ''.join(lines[i:i+25])
+            if 'final l10n = AppLocalizations.of(context)' not in build_content:
+                # 在 build 方法第一行后插入 l10n 定义
+                lines.insert(i+1, '    final l10n = AppLocalizations.of(context);\n')
+                fixed = True
+                print(f"✅ Added l10n definition to: {os.path.basename(file_path)}")
+            break
+    
+    if fixed or not has_import:
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.writelines(lines)
 
-def fix_home_screen():
-    """修复home_screen.dart"""
-    file_path = PROJECT_ROOT / "lib" / "screens" / "home_screen.dart"
-    if not file_path.exists():
-        return
+def fix_invalid_l10n_keys(file_path):
+    """修复无效的 l10n 键名"""
     
-    content = file_path.read_text(encoding='utf-8')
+    with open(file_path, 'r', encoding='utf-8') as f:
+        content = f.read()
     
-    # 修复统计卡片
-    content = content.replace(
-        "_buildStatCard('今日任务', '${_todayTasks.length}', Icons.list),",
-        "_buildStatCard(l10n.todayTasksLabel, '${_todayTasks.length}', Icons.list),"
-    )
+    # 定义有效的 l10n 属性
+    valid_keys = {
+        'confirm': 'confirm',
+        'ok': 'ok', 
+        'cancel': 'cancel',
+        'save': 'save',
+        'delete': 'delete',
+        'exit': 'exit',
+        'back': 'back',
+        'close': 'close',
+        'submit': 'submit',
+        'retry': 'retry',
+    }
     
-    content = content.replace(
-        "_buildStatCard('连续学习', '$_streakDays天', Icons.star),",
-        "_buildStatCard(l10n.streak, '$_streakDays', Icons.star),"
-    )
+    # 查找所有 l10n.$key 的使用
+    matches = re.findall(r'l10n\.(\$key|\w+)', content)
     
-    content = content.replace(
-        "_buildStatCard('完成率', '${_taskStats['completionRate']}%', Icons.check_circle),",
-        "_buildStatCard(l10n.completionRate, '${_taskStats['completionRate']}%', Icons.check_circle),"
-    )
+    for match in matches:
+        if match == '$key':
+            # 替换 l10n.$key
+            content = content.replace('l10n.$key', 'l10n.confirm')
+            print(f"✅ Fixed l10n.$key in: {os.path.basename(file_path)}")
     
-    content = content.replace(
-        "_buildStatCard('总计', '${_taskStats['total']}', Icons.stacked_bar_chart),",
-        "_buildStatCard(l10n.total, '${_taskStats['total']}', Icons.stacked_bar_chart),"
-    )
-    
-    content = content.replace(
-        "_buildStatCard('已完成', '${_taskStats['completed']}', Icons.done_all),",
-        "_buildStatCard(l10n.completedTask, '${_taskStats['completed']}', Icons.done_all),"
-    )
-    
-    content = content.replace(
-        "_buildStatCard('高优先级', '${_taskStats['highPriority']}', Icons.priority_high),",
-        "_buildStatCard(l10n.highPriority, '${_taskStats['highPriority']}', Icons.priority_high),"
-    )
-    
-    # 修复今日任务标题
-    content = content.replace(
-        "Text('今日任务 (${_todayTasks.length})',",
-        "Text('${l10n.todayTasksLabel} (${_todayTasks.length})',"
-    )
-    
-    # 修复一键完成按钮
-    content = content.replace(
-        "child: const Text('一键完成'),",
-        "child: Text(l10n.completeAll),"
-    )
-    
-    # 修复其他字符串
-    content = content.replace(
-        "const Text('今日没有任务', style: TextStyle(fontSize: 16)),",
-        "Text(l10n.noTasksToday, style: const TextStyle(fontSize: 16)),"
-    )
-    
-    content = content.replace(
-        "Text('休息一下或添加新任务', style: TextStyle(fontSize: 14, color: Colors.grey[600])),",
-        "Text(l10n.restOrAddTask, style: TextStyle(fontSize: 14, color: Colors.grey[600])),"
-    )
-    
-    content = content.replace(
-        "child: const Text('去添加任务'),",
-        "child: Text(l10n.goAddTask),"
-    )
-    
-    # 修复完成任务提示
-    content = content.replace(
-        "SnackBar(content: Text('已完成任务: ${task.title}')),",
-        "SnackBar(content: Text('${l10n.taskCompleted}: ${task.title}')),"
-    )
-    
-    file_path.write_text(content, encoding='utf-8')
-    print("✓ 已修复 home_screen.dart")
+    with open(file_path, 'w', encoding='utf-8') as f:
+        f.write(content)
 
-def check_model_imports():
-    """检查Model导入"""
-    screens_dir = PROJECT_ROOT / "lib" / "screens"
+def remove_unused_l10n(file_path):
+    """移除未使用的 l10n 定义"""
     
-    for file_path in screens_dir.glob("*.dart"):
-        content = file_path.read_text(encoding='utf-8')
-        file_name = file_path.name
+    with open(file_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+    
+    # 检查是否有未使用的 l10n 变量
+    # 如果定义了 l10n 但没有在 build 方法中使用
+    
+    lines = content.split('\n')
+    result = []
+    skip_next = False
+    
+    for i, line in enumerate(lines):
+        # 查找未使用的 l10n 定义
+        if 'final l10n = AppLocalizations.of(context)' in line:
+            # 检查这一行是否在注释中
+            if i > 0 and '//' in lines[i-1] and 'l10n' not in lines[i-1]:
+                # 这可能是被注释掉的代码
+                result.append(line)
+                continue
+            
+            # 检查后续内容是否使用了 l10n
+            following = ''.join(lines[i:i+30])
+            if 'l10n.' not in following:
+                # 未使用的变量，跳过这行
+                print(f"⚠️  Removing unused l10n from: {os.path.basename(file_path)}")
+                skip_next = True
+                continue
         
-        # 检查是否需要导入特定Model
-        if 'task_model.dart' in content and not "import '../models/task_model.dart';" in content:
-            print(f"⚠  {file_name}: 可能需要导入 task_model.dart")
-        
-        if 'review_model.dart' in content and not "import '../models/review_model.dart';" in content:
-            print(f"⚠  {file_name}: 可能需要导入 review_model.dart")
-        
-        if 'mistake_model.dart' in content and not "import '../models/mistake_model.dart';" in content:
-            print(f"⚠  {file_name}: 可能需要导入 mistake_model.dart")
+        result.append(line)
+    
+    if len(result) != len(lines):
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write('\n'.join(result))
 
-def main():
-    print("开始完整修复...")
+def process_directory():
+    """处理所有 Dart 文件"""
     
-    # 修复home_screen.dart
-    fix_home_screen()
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    lib_dir = os.path.join(base_dir, 'lib')
     
-    # 检查所有屏幕文件
-    screens_dir = PROJECT_ROOT / "lib" / "screens"
-    fixed_count = 0
+    print("=" * 60)
+    print("开始完整修复 Flutter 项目 l10n 问题...")
+    print("=" * 60)
     
-    for file_path in screens_dir.glob("*.dart"):
-        content = file_path.read_text(encoding='utf-8')
-        original_content = content
-        
-        # 修复中文字符串
-        content = fix_chinese_strings(content, file_path.name)
-        
-        if content != original_content:
-            file_path.write_text(content, encoding='utf-8')
-            print(f"✓ 已修复 {file_path.name}")
-            fixed_count += 1
+    dart_files = []
+    for root, dirs, files in os.walk(lib_dir):
+        for file in files:
+            if file.endswith('.dart'):
+                dart_files.append(os.path.join(root, file))
     
-    print(f"\n总共修复了 {fixed_count} 个文件")
+    print(f"找到 {len(dart_files)} 个 Dart 文件\n")
     
-    # 检查Model导入
-    print("\n检查Model导入...")
-    check_model_imports()
+    error_count = 0
     
-    print("\n修复完成!")
+    for file_path in dart_files:
+        try:
+            add_import_and_fix_l10n(file_path)
+            fix_invalid_l10n_keys(file_path)
+            remove_unused_l10n(file_path)
+        except Exception as e:
+            print(f"❌ Error in {os.path.basename(file_path)}: {e}")
+            error_count += 1
+    
+    print("\n" + "=" * 60)
+    print("修复完成!")
+    print(f"错误数: {error_count}")
+    print("=" * 60)
 
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    process_directory()
