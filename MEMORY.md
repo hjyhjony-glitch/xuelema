@@ -140,7 +140,7 @@ working-directory: xuelema
 
 ### 5项自检
 1. **团队唤醒状态** - 检查所有成员是否在线
-2. **记忆文件读取** - 读取 memory/YYYY-MM-DD.md
+2. **记忆文件读取** - 读取 SOUL.md、USER.md、memory/YYYY-MM-DD.md（当天+昨天）、MEMORY.md
 3. **职责边界检查** - 确认无越权操作
 4. **当前任务状态** - 汇报进行中的任务
 5. **任务分配流程** - 确认任务已分配
@@ -157,7 +157,11 @@ working-directory: xuelema
 | RUNBOT-ASS | ✅ 已就位 |
 
 ### 2. 记忆文件读取 ✅
-- ✅ 已读取 memory/2026-02-19.md
+- ✅ SOUL.md
+- ✅ USER.md
+- ✅ memory/2026-02-19.md（当天）
+- ✅ memory/2026-02-18.md（如存在）
+- ✅ MEMORY.md
 
 ### 3. 职责边界检查 ✅
 - ✅ 无越权操作
