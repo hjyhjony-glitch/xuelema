@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
+import '../l10n/app_localizations.dart';
 
 /// 通知服务 - 处理定时提醒功能
 class NotificationService {
@@ -93,7 +94,6 @@ class NotificationService {
       '学了吗定时提醒',
       channelDescription: '定时学习任务提醒',
       importance: Importance.high,
-import '../l10n/app_localizations.dart';
       priority: Priority.high,
     );
     
