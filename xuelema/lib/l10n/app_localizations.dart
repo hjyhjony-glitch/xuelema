@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
@@ -262,6 +263,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'OK'**
   String get ok;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
 
   /// No description provided for @overdue.
   ///

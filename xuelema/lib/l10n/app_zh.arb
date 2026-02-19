@@ -27,6 +27,7 @@
   "save": "保存",
   "delete": "删除",
   "ok": "确定",
+  "confirm": "确认",
   "overdue": "已过期",
   "noTasksToday": "今日暂无任务",
   "all": "全部",

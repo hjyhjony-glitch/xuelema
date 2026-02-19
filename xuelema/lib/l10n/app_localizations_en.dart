@@ -1,4 +1,5 @@
 import 'app_localizations.dart';
+import 'package:flutter/material.dart';
 
 // ignore_for_file: type=lint
 
@@ -89,6 +90,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ok => 'OK';
+
+  @override
+  String get confirm => 'Confirm';
 
   @override
   String get overdue => 'Overdue';
