@@ -16,7 +16,7 @@ class _MistakeDetailScreenState extends State<MistakeDetailScreen> {
     
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.confirm)),
-      body: const Center(child: Text(context.l10n.confirm)),
+      body: Center(child: Text(context.l10n.confirm)),
     );
   }
 }

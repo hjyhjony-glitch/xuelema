@@ -357,7 +357,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () async {
                 if (textController.text.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text(context.l10n.confirm)),
+                    SnackBar(content: Text(context.l10n.confirm)),
                   );
                   return;
                 }
