@@ -66,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadData(); // 刷新数据
     
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${context.context.l10n.taskCompleted}: ${task.title}')),
+      SnackBar(content: Text('${context.l10n.taskCompleted}: ${task.title}')),
     );
   }
 
@@ -74,12 +74,12 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.context.l10n.appTitle),
+        title: Text(context.l10n.appTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _loadData,
-            tooltip: context.context.l10n.refresh,
+            tooltip: context.l10n.refresh,
           ),
         ],
       ),
