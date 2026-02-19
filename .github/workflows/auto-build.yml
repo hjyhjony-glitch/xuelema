@@ -34,6 +34,10 @@ jobs:
         flutter-version: '3.27.4'
         channel: 'stable'
     
+    - name: Install git
+      run: |
+        which git || apt-get update && apt-get install -y git
+    
     - name: Install dependencies
       run: flutter pub get
     
@@ -69,6 +73,10 @@ jobs:
         flutter-version: '3.27.4'
         channel: 'stable'
     
+    - name: Install git
+      run: |
+        which git || apt-get update && apt-get install -y git
+    
     - name: Install dependencies
       run: flutter pub get
     
@@ -91,6 +99,10 @@ jobs:
       with:
         flutter-version: '3.27.4'
         channel: 'stable'
+    
+    - name: Install git
+      run: |
+        which git || apt-get update && apt-get install -y git
     
     - name: Clean build
       run: flutter clean
@@ -127,12 +139,19 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # 获取完整历史以便git操作
     
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
         flutter-version: '3.27.4'
         channel: 'stable'
+    
+    - name: Install git
+      if: runner.os != 'Windows'  # Windows runner自带git
+      run: |
+        which git || apt-get update && apt-get install -y git
     
     - name: Analyze build failure
       id: analyze
