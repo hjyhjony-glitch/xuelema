@@ -1,4 +1,4 @@
-name: Auto-Build with Self-Healing
+﻿name: Auto-Build with Self-Healing
 
 on:
   push:
@@ -35,11 +35,14 @@ jobs:
         channel: 'stable'
     
     - name: Install dependencies
-      run: flutter pub get
+      run: |
+        cd xuelema
+        flutter pub get
     
     - name: Run flutter analyze
       id: analyze
       run: |
+        cd xuelema
         result=$(flutter analyze 2>&1)
         echo "$result" > analyze_result.txt
         mkdir -p error-logs
@@ -79,10 +82,14 @@ jobs:
         channel: 'stable'
     
     - name: Install dependencies
-      run: flutter pub get
+      run: |
+        cd xuelema
+        flutter pub get
     
     - name: Run tests
-      run: flutter test --coverage
+      run: |
+        cd xuelema
+        flutter test --coverage
 
   build-android:
     name: Build Android APK
@@ -99,14 +106,19 @@ jobs:
         channel: 'stable'
     
     - name: Clean build
-      run: flutter clean
+      run: |
+        cd xuelema
+        flutter clean
     
     - name: Install dependencies
-      run: flutter pub get
+      run: |
+        cd xuelema
+        flutter pub get
     
     - name: Build APK
       id: build
       run: |
+        cd xuelema
         result=$(flutter build apk --debug 2>&1)
         echo "$result" > build_result.txt
         echo "$result"
@@ -213,6 +225,7 @@ jobs:
       id: fix
       run: |
         # 清理build目录
+        cd xuelema
         flutter clean
         
         # 重新获取依赖
@@ -324,3 +337,4 @@ jobs:
         echo "Build: ${{ needs.build-android.result }}"
         echo "Self-Heal: ${{ needs.self-heal.result || 'skipped' }}"
         echo "Notify: ${{ needs.notify.result }}"
+
