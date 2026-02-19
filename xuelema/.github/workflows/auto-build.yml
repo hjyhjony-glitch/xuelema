@@ -29,11 +29,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Install git
-      run: |
-        apt-get update
-        apt-get install -y git
-    
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
