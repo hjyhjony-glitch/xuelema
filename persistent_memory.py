@@ -354,6 +354,288 @@ def clear() -> int:
 
 # ============ CLI 入口 ============
 
+# 尝试从 core 模块导入
+_imported_core_modules = None
+try:
+    import sys
+    sys.path.insert(0, str(Path(__file__).parent / ".memory"))
+    _imported_core_modules = __import__('core', fromlist=[
+        'StorageModule', 'WALHandler', 'BackupManager', 
+        'Archiver', 'IndexerModule', 'SearchModule'
+    ])
+except ImportError:
+    _imported_core_modules = None
+
+
+class PersistentMemory:
+    """统一记忆系统 API - 增强版"""
+
+    def __init__(self, root_path: str = "./.memory"):
+        self.root = Path(root_path)
+        self.root.mkdir(parents=True, exist_ok=True)
+
+        # 从导入的模块获取类
+        if _imported_core_modules:
+            StorageModule = _imported_core_modules.StorageModule
+            WALHandler = _imported_core_modules.WALHandler
+            BackupManager = _imported_core_modules.BackupManager
+            Archiver = _imported_core_modules.Archiver
+            IndexerModule = _imported_core_modules.IndexerModule
+            SearchModule = _imported_core_modules.SearchModule
+
+        # 初始化核心模块
+        self.storage = StorageModule(str(self.root))
+        self.wal = WALHandler(str(self.root / "_index" / "_wal"))
+        self.backup = BackupManager(
+            str(self.root),
+            str(self.root / "_backup")
+        )
+        self.archiver = Archiver(
+            str(self.root),
+            str(self.root / "_archive")
+        )
+        self.indexer = IndexerModule(self.storage)
+        self.search = SearchModule(self.storage, self.indexer)
+
+        # 初始化目录结构
+        self._init_directories()
+
+    def _init_directories(self):
+        """初始化目录结构"""
+        dirs = [
+            "conversations/raw",
+            "conversations/tagged/important",
+            "conversations/tagged/decision",
+            "conversations/tagged/todo",
+            "goals/annual",
+            "goals/quarterly",
+            "goals/monthly",
+            "goals/_闭环/daily_checkin",
+            "goals/_闭环/weekly_review",
+            "goals/_闭环/monthly_review",
+            "goals/_闭环/quarterly_review",
+            "goals/_templates",
+            "knowledge/topics",
+            "knowledge/resources",
+            "_index/_wal",
+            "_backup/daily",
+            "_backup/weekly",
+            "_backup/versions",
+            "_archive"
+        ]
+        for d in dirs:
+            (self.root / d).mkdir(parents=True, exist_ok=True)
+
+    # ============ Conversation API ============
+
+    def save_conversation(self, date: str, data: Dict) -> bool:
+        """保存对话快照"""
+        path = f"conversations/raw/{date[:4]}/{date[5:7]}/{date}.json"
+        
+        # 写入 WAL
+        self.wal.log("CREATE", {"path": path, "data": data})
+        
+        return self.storage.save(path, data)
+
+    def get_conversation(self, date: str) -> Optional[Dict]:
+        """获取对话"""
+        path = f"conversations/raw/{date[:4]}/{date[5:7]}/{date}.json"
+        return self.storage.load(path)
+
+    def tag_conversation(self, date: str, tags: List[str]) -> bool:
+        """标记对话"""
+        for tag in tags:
+            safe_tag = tag.replace("/", "_").replace(" ", "-")
+            path = f"conversations/tagged/{safe_tag}/{date}.md"
+            
+            content = f"""# {date} - Tagged Conversations
+
+**Tags**: {', '.join(tags)}
+**Time**: {datetime.now().isoformat()}
+
+## Summary
+
+See: `conversations/raw/{date[:4]}/{date[5:7]}/{date}.json`
+
+"""
+            self.storage.save(path, content)
+        
+        return True
+
+    # ============ Goal API ============
+
+    def save_goal(self, goal_type: str, period: str, data: Dict) -> bool:
+        """保存目标"""
+        path = f"goals/{goal_type}/{period}.md"
+        
+        # 转换为 Markdown 格式
+        content = self._goal_to_markdown(goal_type, period, data)
+        
+        # 写入 WAL
+        self.wal.log("CREATE", {"path": path, "data": content})
+        
+        return self.storage.save(path, content)
+
+    def _goal_to_markdown(self, goal_type: str, period: str, data: Dict) -> str:
+        """将目标数据转换为 Markdown"""
+        lines = [
+            f"# {goal_type.title()} Goal: {period}",
+            "",
+            f"**Created**: {datetime.now().isoformat()}",
+            f"**Status**: {data.get('status', 'active')}",
+            "",
+            "## Goals",
+            ""
+        ]
+        
+        for goal in data.get("goals", []):
+            lines.append(f"### {goal.get('title', 'Untitled')}")
+            lines.append(f"{goal.get('description', '')}")
+            lines.append(f"- **Priority**: {goal.get('priority', 'medium')}")
+            lines.append(f"- **Progress**: {goal.get('progress', 0)}%")
+            lines.append("")
+        
+        return "\n".join(lines)
+
+    def checkin_daily(self, date: str, progress: int, notes: str) -> bool:
+        """每日签到"""
+        data = {
+            "date": date,
+            "progress": progress,
+            "notes": notes,
+            "timestamp": datetime.now().isoformat()
+        }
+        path = f"goals/_闭环/daily_checkin/{date}.json"
+        
+        # 写入 WAL
+        self.wal.log("CREATE", {"path": path, "data": data})
+        
+        return self.storage.save(path, data)
+
+    # ============ Knowledge API ============
+
+    def save_knowledge(self, category: str, title: str, content: str,
+                       tags: List[str] = None) -> bool:
+        """保存知识条目"""
+        safe_title = title.replace("/", "_").replace(" ", "-").replace(":", "-")
+        path = f"knowledge/topics/{category}/{safe_title}.md"
+
+        yaml_header = f"""---
+title: "{title}"
+category: "{category}"
+created_at: "{datetime.now().isoformat()}"
+tags: {json.dumps(tags or [])}
+---
+
+"""
+        full_content = yaml_header + content
+        
+        # 写入 WAL
+        self.wal.log("CREATE", {"path": path, "data": full_content})
+        
+        return self.storage.save(path, full_content)
+
+    def search_knowledge(self, query: str, filters: Dict = None) -> List[Dict]:
+        """搜索知识库"""
+        return self.search.search(query, filters)
+
+    def suggest_tags(self, content: str) -> List[str]:
+        """自动建议标签"""
+        keywords = ["python", "memory", "design", "task", "important", "goal", "knowledge"]
+        suggestions = [k for k in keywords if k in content.lower()]
+        return suggestions
+
+    # ============ Backup & Archive API ============
+
+    def create_backup(self, backup_type: str = "daily") -> str:
+        """创建备份"""
+        return self.backup.create_backup(backup_type)
+
+    def list_backups(self) -> List[Dict]:
+        """列出备份"""
+        return self.backup.list_backups()
+
+    def restore_backup(self, backup_path: str) -> bool:
+        """恢复备份"""
+        return self.backup.restore_backup(backup_path)
+
+    def archive_old(self, days: int = 90) -> int:
+        """归档旧数据"""
+        return self.archiver.archive_old_data(days)
+
+    def cleanup(self, max_size_gb: float = 5.0) -> Dict:
+        """清理空间"""
+        return self.archiver.cleanup(max_size_gb)
+
+    # ============ Index API ============
+
+    def rebuild_indexes(self):
+        """重建索引"""
+        self.indexer.build_indexes()
+
+    def search_by_tag(self, tag: str) -> List[str]:
+        """按标签搜索"""
+        return self.indexer.search_by_tag(tag)
+
+
+# ============ 便捷函数 ============
+
+_pm: Optional[PersistentMemory] = None
+
+
+def get_pm() -> PersistentMemory:
+    """获取 PersistentMemory 实例"""
+    global _pm
+    if _pm is None:
+        _pm = PersistentMemory()
+    return _pm
+
+
+def save_conversation(date: str, data: Dict) -> bool:
+    """保存对话"""
+    return get_pm().save_conversation(date, data)
+
+
+def get_conversation(date: str) -> Optional[Dict]:
+    """获取对话"""
+    return get_pm().get_conversation(date)
+
+
+def tag_conversation(date: str, tags: List[str]) -> bool:
+    """标记对话"""
+    return get_pm().tag_conversation(date, tags)
+
+
+def save_goal(goal_type: str, period: str, data: Dict) -> bool:
+    """保存目标"""
+    return get_pm().save_goal(goal_type, period, data)
+
+
+def save_knowledge(category: str, title: str, content: str,
+                   tags: List[str] = None) -> bool:
+    """保存知识"""
+    return get_pm().save_knowledge(category, title, content, tags)
+
+
+def search_knowledge(query: str, filters: Dict = None) -> List[Dict]:
+    """搜索知识"""
+    return get_pm().search_knowledge(query, filters)
+
+
+def daily_checkin(date: str, progress: int, notes: str) -> bool:
+    """每日签到"""
+    return get_pm().checkin_daily(date, progress, notes)
+
+
+def create_backup(backup_type: str = "daily") -> str:
+    """创建备份"""
+    return get_pm().create_backup(backup_type)
+
+
+def archive_old(days: int = 90) -> int:
+    """归档旧数据"""
+    return get_pm().archive_old(days)
+
 if __name__ == "__main__":
     import sys
 

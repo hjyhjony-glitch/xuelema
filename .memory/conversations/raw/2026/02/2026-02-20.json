@@ -1,0 +1,22 @@
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "测试对话"
+    },
+    {
+      "role": "assistant",
+      "content": "测试回复"
+    }
+  ],
+  "metadata": {
+    "tags": [
+      "测试",
+      "重要"
+    ]
+  },
+  "_meta": {
+    "updated_at": "2026-02-20T00:32:37.807937",
+    "checksum": "fb079dfa07bf9087"
+  }
+}

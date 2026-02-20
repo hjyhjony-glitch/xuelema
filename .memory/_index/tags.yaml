@@ -1,0 +1,35 @@
+# 全局标签索引
+version: 1.0
+last_updated: null
+
+tag_hierarchy:
+  importance:
+    - critical    # 紧急/关键
+    - high        # 高优先级
+    - medium      # 中优先级
+    - low         # 低优先级
+    - archive     # 已归档
+
+  domain:
+    - programming
+    - ai_ml
+    - project
+    - personal
+
+  type:
+    - task        # 任务
+    - goal        # 目标
+    - knowledge   # 知识
+    - decision    # 决策
+    - lesson      # 教训
+
+auto_suggestions:
+  python: [programming, python, code]
+  memory: [knowledge, system_design]
+  设计: [important, project]
+
+tag_aliases:
+  重要: important
+  关键: critical
+  任务: task
+  决策: decision
