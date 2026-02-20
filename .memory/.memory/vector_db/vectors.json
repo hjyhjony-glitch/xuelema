@@ -1,0 +1,50 @@
+{
+  "memories": {
+    "ids": [
+      "m1",
+      "m2",
+      "m3",
+      "test2",
+      "test1",
+      "test2"
+    ],
+    "documents": [
+      "今天天气很好，我和朋友去公园散步",
+      "学习Python编程很有趣",
+      "明天要开会讨论项目进度",
+      "另一个文档关于Python编程",
+      "这是一个测试文档",
+      "另一个文档关于Python编程"
+    ],
+    "metadatas": [
+      {
+        "type": "daily"
+      },
+      {
+        "type": "study"
+      },
+      {
+        "type": "work"
+      },
+      {
+        "type": "test"
+      },
+      {
+        "type": "test"
+      },
+      {
+        "type": "test"
+      }
+    ]
+  },
+  "conversations": {
+    "ids": [],
+    "documents": [],
+    "metadatas": []
+  },
+  "knowledge": {
+    "ids": [],
+    "documents": [],
+    "metadatas": []
+  }
+}
