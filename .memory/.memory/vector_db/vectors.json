@@ -784,7 +784,17 @@
       "e6310cf1-da9f-4f65-b385-8c77fe504fbd",
       "64c5df18-9587-4e6e-ab3d-e6417d2efd61",
       "b981a8e0-327f-4c4d-803d-9b47e637cba6",
-      "52464ddf-fa64-4334-86fe-f1faf6b93050"
+      "52464ddf-fa64-4334-86fe-f1faf6b93050",
+      "1f930d44-3db9-405d-8164-cb6f24989aff",
+      "c551acc7-ce18-4fd2-8060-23097fe703e0",
+      "519d61f1-414c-4461-9504-49873b6173bd",
+      "4ded091c-993b-4dde-8f87-d508ddb60c95",
+      "60b41796-58ff-4605-8a05-db366c0811e3",
+      "39fcadde-3b90-4b92-9ae5-cb5942640eca",
+      "4763372a-9e47-431c-88e9-a9c497563130",
+      "f2824bf2-ac36-4567-ad5d-05cca44cf6e9",
+      "ee8723e4-d01a-4d16-b3d2-8b92eb305022",
+      "16056076-7eaa-44f4-bf68-ee902018dc19"
     ],
     "documents": [
       "今天天气很好，我和朋友去公园散步",
@@ -1570,7 +1580,17 @@
       "special: 特殊字符: !@#$%^&*()[]{}|;':\",./<>?",
       "unicode: 中文内容 🚀 émojis",
       "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk: 内容",
-      "long_value: vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"
+      "long_value: vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv",
+      "memory_1. 团队协作原则: ### 核心原则\n1. 用户只给目标，不参与流程\n2. 完全自动化执行，持续迭代直到通过\n3. 不是关键问题不询问用户\n4. 所有操作经过 ARC 审核验收\n5. 团队分工明确\n\n### 团队分工\n- RUNBOT（任务协调，不执行代码）\n- ARC（高级分析、代码审核）\n- DEV（技术实施、代码开发）\n- ASS（文档管理、全程记录）\n\n### 历史事件\n- 2026-02-19：团队职责明确（DEV/ARC/ASS/RUNBOT分工确定）\n- 2026-02-19：团队协作问题处理（DEV误解任务，开发了题库功能而非自动化测试系统）\n- 2026-02-19：Git推送问题处理（网络延迟600ms，大文件推送超时）",
+      "memory_2. 团队角色定义: ### RUNBOT-ARC（青岩）\n- **角色定位**：高级分析、代码审核、项目总监\n- **角色ID**：RUNBOT-ARC\n- **启用时间**：2026-02-19\n- **核心职责**：\n  - 任务分析、方案制定\n  - 代码审核，质量把控\n  - 任务分配、进度跟踪\n  - 团队协作协调\n- **工作特点**：严谨分析、全局视角、风险把控\n- **协作关系**：指导DEV和ASS工作，验收交付物，与用户直接沟通\n\n### RUNBOT-DEV（笑天）\n- **角色定位**：技术实施、代码开发\n- **角色ID**：RUNBOT-DEV\n- **启用时间**：2026-02-19\n- **核心职责**：\n  - 功能开发、代码实现\n  - Bug修复，性能优化\n  - 自测验证、提交代码\n- **工作特点**：高效执行、技术深度、快速迭代\n- **协作关系**：接受ARC任务分配，向ARC交付成果\n\n### RUNBOT-ASS（书瑶）\n- **角色定位**：文档管理、全程记录\n- **角色ID**：RUNBOT-ASS\n- **启用时间**：2026-02-19\n- ",
+      "memory_3. 自动化测试流程: ### 核心原则\n- 用户只给目标，不参与流程\n- 完全自动化执行，持续迭代直到通过\n\n### 流程图\n```\n开发自测 → 完善APP → 本地构建 → 自测功能\n              ↓ 不通过\n        继续完善 ←──────────\n              ↓ 通过\n        上传GitHub构建 → CI构建 → 成功 → 完成\n```\n\n### 测试顺序（P0优先）\n1. 核心功能（任务管理、番茄钟、题库）\n2. 数据功能（存储、统计、提醒）\n3. 辅助功能（OCR、资源库、社交）\n\n### 自测系统组成\n```\n├── scripts/build.sh              # 构建脚本\n├── scripts/clean_build.sh        # 清理脚本\n├── scripts/self_test.sh          # 自测试脚本（Linux/Mac）\n├── scripts/self_test.ps1         # 自测试脚本（Windows）\n└── tests/\n    ├── __init__.py\n    └",
+      "memory_4. 模型配置规则: - 所有助手使用统一的模型配置\n- 模型切换需通过 sessions_spawn 的 model 参数\n- DEV/ARC/ASS/RUNBOT 各角色模型保持一致\n- 模型变更需记录到 MEMORY.md\n\n### 历史事件\n- 2026-02-20：模型配置检查（发现所有助手使用minimax-m2.1）\n- 2026-02-20：DeepSeek模型问题处理（发现DeepSeek配置问题）",
+      "memory_5. 长期记忆修改规则: - MEMORY.md 用于长期记忆（主会话专用）\n- daily notes 用于原始日志记录\n- 重要决策、事件、教训需同步更新到 MEMORY.md\n- 不直接在 shared contexts 中加载 MEMORY.md（安全考虑）\n- 每次会话开始时读取 MEMORY.md（main session）",
+      "memory_6. DeepSeek 模型问题处理规则: ### 处理流程\n问题发现 → ARC 分析 → 制定方案 → 分配给 DEV → DEV 执行修改 → 验证结果\n\n### 核心原则\n- DeepSeek 有问题 → 必须查问题，直至正确后，才开始任务\n- 紧急情况也不行\n\n### 历史事件\n- 2026-02-20：DeepSeek模型问题发现和处理",
+      "memory_7. 启动自检清单: ### 📋 检查1：团队唤醒状态\n- [ ] RUNBOT-ARC 唤醒了？\n- [ ] RUNBOT-DEV 唤醒了？\n- [ ] RUNBOT-ASS 唤醒了？\n\n### 📋 检查2：记忆文件读取\n- [ ] 读取了 memory/YYYY-MM-DD.md（今天的记忆）？\n- [ ] 读取了 MEMORY.md（长期记忆）？\n\n**重要性**：\n- 了解最近的上下文\n- 避免重复工作\n- 记住之前的决策\n\n### 📋 检查3：职责边界（最重要！）\n- [ ] 这是代码开发工作？我应该分配给 DEV\n- [ ] 这是代码审核工作？我应该分配给 ARC\n- [ ] 这是文档记录工作？我应该分配给 ASS\n- [ ] 我是否准备亲自执行上述工作？\n\n### 📋 检查4：当前任务状态\n- [ ] 用户有什么新任务？\n- [ ] 任务是否已分配？\n- [ ] 团队成员是否在工作？\n\n### 📋 检查5：任务分配流程\n**标准流程**：\n用户指令 → 我(分析拆解) → sessions_spawn 分配给对应助手 → 跟踪进度 → 验收交付\n\n### 📋 自检规则\n- 每次会话开始时执行\n",
+      "memory_8. API Keys 存储: ### OpenAI\nOPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxx\n\n### DeepSeek\nDEEPSEEK_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxx\n\n### MiniMax\nMINIMAX_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxx\n\n### 火山引擎 (DeepSeek)\nVOLCANO_API_KEY=e4163865-8666-4e36-9081-efc18cb6b103",
+      "memory_9. 历史变更记录（时间线）: ### 2026-02-20\n- **团队角色正式定义**：MEMORY.md 中新增团队角色定义章节（ARC/DEV/ASS）\n- **自动化测试流程建立**：明确自测系统≠题库测验\n- **团队协作问题**：DEV误解任务，开发了题库功能而非自动化测试系统\n- **永久记忆更新**：新增第7-8节（团队协作原则、自动化测试流程）\n- **模型配置检查**：发现所有助手使用minimax-m2.1\n- **DeepSeek模型问题处理**：发现DeepSeek配置问题\n- **自检清单上线**：5项自检清单上线\n- **GitHub Actions修复**：添加working-directory: xuelema到workflow\n- **学了吗APP构建修复**：本地构建成功，GitHub Actions失败修复\n- **记忆系统漏洞修复**：发现并修复6个记忆系统漏洞\n- **自检清单优化（格式更新、职责边界强调）**：更新自检清单格式，强调职责边界检查\n\n### 2026-02-19\n- **记忆系统漏洞修复**：发现6个漏洞（agents_list配置、模型映射等）\n- **",
+      "memory_10. 附录: ### 团队沟通规范\n- 主会话（main session）使用 MEMORY.md\n- 临时讨论使用 daily notes\n- 重要决策需同步更新到 MEMORY.md\n- 技术细节记录在项目文档中\n\n### 错误处理原则\n- 遇到问题先分析，再行动\n- 遵循\"问题发现 → 分析 → 方案 → 执行 → 验证\"流程\n- 不确定时主动询问用户\n- 记录错误教训避免重复\n\n### 文档更新周期\n- 每日：更新 daily notes\n- 每周：回顾并同步重要内容到 MEMORY.md\n- 每月：审查 MEMORY.md 清理过时信息\n\n### 安全与权限规则\n- API Keys 仅本地存储，禁止上传\n- MEMORY.md 为主会话专用，不加载到共享上下文\n- 敏感信息使用环境变量管理\n- 定期轮换 API Keys 确保安全\n\n### 项目最佳实践\n- 代码提交前进行自测\n- 遵循项目编码规范\n- 保持文档与代码同步更新\n- 使用版本控制管理变更历史\n\n### 待处理事项\n- [ ] 清理历史会话（sessions.json）\n- [ ] 验证GitHub Actions构建结果\n"
     ],
     "metadatas": [
       {
@@ -6111,6 +6131,116 @@
         "key": "long_value",
         "type": "custom",
         "tags": []
+      },
+      {
+        "key": "memory_1. 团队协作原则",
+        "type": "knowledge",
+        "tags": [
+          "team",
+          "collaboration"
+        ],
+        "source": "MEMORY.md",
+        "title": "1. 团队协作原则",
+        "migrated_at": "2026-02-20T03:59:05.767745"
+      },
+      {
+        "key": "memory_2. 团队角色定义",
+        "type": "knowledge",
+        "tags": [
+          "team",
+          "collaboration"
+        ],
+        "source": "MEMORY.md",
+        "title": "2. 团队角色定义",
+        "migrated_at": "2026-02-20T03:59:05.780989"
+      },
+      {
+        "key": "memory_3. 自动化测试流程",
+        "type": "knowledge",
+        "tags": [
+          "automation",
+          "testing"
+        ],
+        "source": "MEMORY.md",
+        "title": "3. 自动化测试流程",
+        "migrated_at": "2026-02-20T03:59:05.788669"
+      },
+      {
+        "key": "memory_4. 模型配置规则",
+        "type": "knowledge",
+        "tags": [
+          "model",
+          "config"
+        ],
+        "source": "MEMORY.md",
+        "title": "4. 模型配置规则",
+        "migrated_at": "2026-02-20T03:59:05.796591"
+      },
+      {
+        "key": "memory_5. 长期记忆修改规则",
+        "type": "decision",
+        "tags": [
+          "rule",
+          "principle"
+        ],
+        "source": "MEMORY.md",
+        "title": "5. 长期记忆修改规则",
+        "migrated_at": "2026-02-20T03:59:05.804132"
+      },
+      {
+        "key": "memory_6. DeepSeek 模型问题处理规则",
+        "type": "knowledge",
+        "tags": [
+          "model",
+          "config"
+        ],
+        "source": "MEMORY.md",
+        "title": "6. DeepSeek 模型问题处理规则",
+        "migrated_at": "2026-02-20T03:59:05.812979"
+      },
+      {
+        "key": "memory_7. 启动自检清单",
+        "type": "knowledge",
+        "tags": [
+          "memory",
+          "migrated"
+        ],
+        "source": "MEMORY.md",
+        "title": "7. 启动自检清单",
+        "migrated_at": "2026-02-20T03:59:05.821643"
+      },
+      {
+        "key": "memory_8. API Keys 存储",
+        "type": "knowledge",
+        "tags": [
+          "memory",
+          "migrated"
+        ],
+        "source": "MEMORY.md",
+        "title": "8. API Keys 存储",
+        "migrated_at": "2026-02-20T03:59:05.830344"
+      },
+      {
+        "key": "memory_9. 历史变更记录（时间线）",
+        "type": "conversation",
+        "tags": [
+          "history",
+          "changelog"
+        ],
+        "source": "MEMORY.md",
+        "title": "9. 历史变更记录（时间线）",
+        "migrated_at": "2026-02-20T03:59:05.838167"
+      },
+      {
+        "key": "memory_10. 附录",
+        "type": "knowledge",
+        "tags": [
+          "memory",
+          "migrated"
+        ],
+        "source": "MEMORY.md",
+        "title": "10. 附录",
+        "migrated_at": "2026-02-20T03:59:05.846973"
       }
     ]
   },
