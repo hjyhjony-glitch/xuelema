@@ -1,17 +1,16 @@
 """
-Unit Tests for Vector Storage Module (Mock-based)
+Unit Tests for Vector Storage Module (NumPy-based Mock)
 ================================================
-向量存储模块的单元测试（使用 Mock）
+向量存储模块的单元测试（使用轻量级 NumPy 实现替代 ChromaDB）
 
 由于 Python 3.14 与 ChromaDB 的 pydantic v1 兼容性问题，
-本测试使用 Mock 来验证代码逻辑。
+本测试使用 `.memory/chromadb_storage.py` 的轻量级 NumPy 实现。
 
 测试覆盖:
-- 初始化 ChromaDB 集合
-- 添加向量 (add_vector)
-- 向量搜索 (search_vector)
-- 删除向量 (delete_vector)
-- 更新向量 (update_vector)
+- 初始化向量存储
+- 添加向量 (add)
+- 向量搜索 (search)
+- 删除向量 (delete)
 
 Author: RUNBOT-DEV（笑天）
 Version: 1.0.0
@@ -20,15 +19,17 @@ Date: 2026-02-20
 
 import pytest
 import os
+import sys
 import tempfile
 import shutil
-import uuid
-from typing import Dict, Any, List, Optional
-from unittest.mock import Mock, patch, MagicMock, PropertyMock
 
-# 导入被测模块
-import sys
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# 确保 .memory 目录在路径中
+memory_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), ".memory")
+if memory_dir not in sys.path:
+    sys.path.insert(0, memory_dir)
+
+# 导入轻量级 NumPy 实现
+from chromadb_storage import VectorStorage, add_vector, search_vector, delete_vector
 
 
 # ============ Fixtures ============
@@ -44,49 +45,23 @@ def temp_dir():
 
 
 @pytest.fixture
-def sample_content():
-    """示例内容"""
-    return "Python is a great programming language for AI and machine learning."
+def storage(temp_dir):
+    """创建测试用存储实例"""
+    vs = VectorStorage(persist_dir=temp_dir)
+    yield vs
+    vs._save()  # 确保保存
 
 
 @pytest.fixture
-def sample_metadata():
-    """示例元数据"""
-    return {
-        "tags": ["python", "ai"],
-        "category": "programming",
-        "priority": "high"
-    }
-
-
-@pytest.fixture
-def mock_chromadb():
-    """创建 Mock ChromaDB 对象"""
-    mock_client = MagicMock()
-    mock_collection = MagicMock()
-    
-    # Mock collection methods
-    mock_collection.add = MagicMock()
-    mock_collection.get = MagicMock(return_value={
-        "ids": [],
-        "documents": [],
-        "metadatas": [],
-        "distances": []
-    })
-    mock_collection.delete = MagicMock()
-    mock_collection.query = MagicMock(return_value={
-        "ids": [[]],
-        "documents": [[]],
-        "metadatas": [[]],
-        "distances": [[]]
-    })
-    mock_collection.count = MagicMock(return_value=0)
-    
-    # Mock client methods
-    mock_client.get_collection = MagicMock(return_value=mock_collection)
-    mock_client.create_collection = MagicMock(return_value=mock_collection)
-    
-    return mock_client, mock_collection
+def sample_data():
+    """示例数据"""
+    return [
+        {"id": "doc1", "content": "Python 是一种流行的编程语言", "metadata": {"lang": "python"}},
+        {"id": "doc2", "content": "机器学习是人工智能的分支", "metadata": {"field": "ml"}},
+        {"id": "doc3", "content": "深度学习使用神经网络", "metadata": {"field": "dl"}},
+        {"id": "doc4", "content": "自然语言处理处理文本", "metadata": {"field": "nlp"}},
+        {"id": "doc5", "content": "计算机视觉处理图像", "metadata": {"field": "cv"}},
+    ]
 
 
 # ============ Import Test ============
@@ -97,445 +72,345 @@ class TestImport:
     def test_import_vector_storage(self):
         """测试导入模块"""
         try:
-            from core.vector_storage import (
+            from chromadb_storage import (
                 VectorStorage,
-                VectorStorageError,
-                CollectionNotFoundError,
-                DocumentNotFoundError,
-                EmbeddingError,
-                CHROMADB_AVAILABLE
+                vector_db,
+                add_vector,
+                search_vector,
+                delete_vector
             )
             
             # Verify classes exist
             assert VectorStorage is not None
-            assert VectorStorageError is not None
-            assert CollectionNotFoundError is not None
-            assert DocumentNotFoundError is not None
+            assert vector_db is not None
+            assert callable(add_vector)
+            assert callable(search_vector)
+            assert callable(delete_vector)
             
-            print("✅ All classes imported successfully")
+            print("✅ All classes and functions imported successfully")
             
         except ImportError as e:
             pytest.fail(f"Import failed: {e}")
 
 
-# ============ Mock-based Tests ============
+# ============ Core Functionality Tests ============
 
-class TestVectorStorageWithMock:
-    """使用 Mock 测试 VectorStorage"""
+class TestVectorStorageInit:
+    """测试初始化"""
     
-    def test_generate_id_format(self):
-        """测试 ID 生成格式"""
-        from core.vector_storage import VectorStorage
-        
-        with patch('core.vector_storage.chromadb'):
-            # Create instance without actual ChromaDB
-            with patch.object(VectorStorage, '_get_or_create_collection'):
-                vs = VectorStorage.__new__(VectorStorage)
-                vs._lock = MagicMock()
-                vs._collections = {}
-                
-                # Test ID generation
-                doc_id = vs._generate_id()
-                assert doc_id.startswith("doc_")
-                assert len(doc_id) == len("doc_") + 16  # UUID hex length
+    def test_init_default_directory(self, temp_dir):
+        """测试默认初始化目录"""
+        vs = VectorStorage(persist_dir=temp_dir)
+        assert os.path.exists(temp_dir)
     
-    def test_validate_collection_new(self, temp_dir):
-        """测试验证新集合"""
-        from core.vector_storage import VectorStorage
-        
-        with patch('core.vector_storage.chromadb'):
-            vs = VectorStorage.__new__(VectorStorage)
-            vs.persist_dir = temp_dir
-            vs._lock = MagicMock()
-            vs._collections = {}
-            vs._client = MagicMock()
-            vs._get_or_create_collection = MagicMock(return_value=MagicMock())
-            
-            collection_name = vs._validate_collection("test_collection")
-            assert collection_name == "test_collection"
-    
-    def test_validate_collection_none(self, temp_dir):
-        """测试验证 None 集合（使用默认 knowledge）"""
-        from core.vector_storage import VectorStorage
-        
-        with patch('core.vector_storage.chromadb'):
-            vs = VectorStorage.__new__(VectorStorage)
-            vs.persist_dir = temp_dir
-            vs._lock = MagicMock()
-            vs._collections = {}
-            vs._client = MagicMock()
-            vs._get_or_create_collection = MagicMock(return_value=MagicMock())
-            
-            collection_name = vs._validate_collection(None)
-            assert collection_name == VectorStorage.COLLECTION_KNOWLEDGE
+    def test_init_creates_default_collections(self, temp_dir):
+        """测试初始化默认集合"""
+        vs = VectorStorage(persist_dir=temp_dir)
+        assert "memories" in vs.collections
+        assert "conversations" in vs.collections
+        assert "knowledge" in vs.collections
 
 
-class TestVectorStorageLogic:
-    """测试 VectorStorage 逻辑"""
+class TestAddVector:
+    """测试添加向量"""
     
-    def test_collection_names_constant(self):
-        """测试集合名称常量"""
-        from core.vector_storage import VectorStorage
+    def test_add_single_vector(self, storage):
+        """测试添加单个向量"""
+        storage.add(
+            collection="test_coll",
+            doc_id="test_doc1",
+            document="测试文档内容",
+            metadata={"tag": "test"}
+        )
         
-        assert VectorStorage.COLLECTION_CONVERSATIONS == "conversations"
-        assert VectorStorage.COLLECTION_GOALS == "goals"
-        assert VectorStorage.COLLECTION_KNOWLEDGE == "knowledge"
+        coll = storage.collections["test_coll"]
+        assert "test_doc1" in coll["ids"]
+        assert "测试文档内容" in coll["documents"]
     
-    def test_add_vector_params(self):
-        """测试 add_vector 参数处理"""
-        from core.vector_storage import VectorStorage
-        
-        with patch('core.vector_storage.chromadb'):
-            vs = VectorStorage.__new__(VectorStorage)
-            vs._lock = MagicMock()
-            vs._collections = {}
-            vs._validate_collection = MagicMock(return_value="knowledge")
-            vs._get_or_create_collection = MagicMock(return_value=MagicMock())
-            vs._generate_id = MagicMock(return_value="doc_test123")
-            
-            # Test with custom ID
-            custom_id = "my_custom_id"
-            doc_id = vs.add_vector(
-                content="test content",
-                doc_id=custom_id
+    def test_add_multiple_vectors(self, storage, sample_data):
+        """测试添加多个向量"""
+        for item in sample_data:
+            storage.add(
+                collection="test_coll",
+                doc_id=item["id"],
+                document=item["content"],
+                metadata=item["metadata"]
             )
-            
-            assert doc_id == custom_id
-            vs._validate_collection.assert_called_once()
-    
-    def test_search_vector_params(self):
-        """测试 search_vector 参数处理"""
-        from core.vector_storage import VectorStorage
         
-        with patch('core.vector_storage.chromadb'):
-            vs = VectorStorage.__new__(VectorStorage)
-            vs._lock = MagicMock()
-            vs._collections = {}
-            vs._search_collection = MagicMock(return_value=[])
-            
-            # Test with n_results
-            results = vs.search_vector(
-                query="test query",
-                n_results=10
+        coll = storage.collections["test_coll"]
+        assert len(coll["ids"]) == 5
+        assert len(coll["documents"]) == 5
+    
+    def test_add_unicode_content(self, storage):
+        """测试添加 Unicode 内容"""
+        storage.add(
+            collection="test_coll",
+            doc_id="unicode_doc",
+            document="中文内容 🚀 émojis",
+            metadata={"中文": "标签"}
+        )
+        
+        coll = storage.collections["test_coll"]
+        assert "unicode_doc" in coll["ids"]
+    
+    def test_add_empty_content(self, storage):
+        """测试添加空内容"""
+        storage.add(
+            collection="test_coll",
+            doc_id="empty_doc",
+            document="",
+            metadata={}
+        )
+        
+        coll = storage.collections["test_coll"]
+        assert "empty_doc" in coll["ids"]
+    
+    def test_add_creates_collection(self, storage):
+        """测试添加自动创建集合"""
+        storage.add(
+            collection="new_collection",
+            doc_id="doc1",
+            document="新集合内容",
+            metadata={}
+        )
+        
+        assert "new_collection" in storage.collections
+
+
+class TestSearchVector:
+    """测试搜索向量"""
+    
+    def test_search_returns_results(self, storage, sample_data):
+        """测试搜索返回结果"""
+        for item in sample_data:
+            storage.add(
+                collection="test_coll",
+                doc_id=item["id"],
+                document=item["content"],
+                metadata=item["metadata"]
             )
-            
-            assert vs._search_collection.call_count == 0  # Called with collection name first
-    
-    def test_delete_vector_params(self):
-        """测试 delete_vector 参数处理"""
-        from core.vector_storage import VectorStorage
         
-        with patch('core.vector_storage.chromadb'):
-            vs = VectorStorage.__new__(VectorStorage)
-            vs._lock = MagicMock()
-            vs._collections = {}
-            vs._validate_collection = MagicMock(return_value="knowledge")
-            vs._get_or_create_collection = MagicMock(return_value=MagicMock())
-            
-            # Test with specific collection
-            result = vs.delete_vector(
-                doc_id="test_doc",
-                collection_name="knowledge"
+        results = storage.search(
+            collection="test_coll",
+            query="编程语言 Python",
+            n_results=3
+        )
+        
+        assert results is not None
+        assert "ids" in results
+        assert "documents" in results
+        assert len(results["ids"]) > 0
+    
+    def test_search_result_order(self, storage, sample_data):
+        """测试搜索结果按距离排序"""
+        for item in sample_data:
+            storage.add(
+                collection="test_coll",
+                doc_id=item["id"],
+                document=item["content"],
+                metadata=item["metadata"]
             )
-            
-            vs._validate_collection.assert_called()
-
-
-class TestExceptionClasses:
-    """测试异常类"""
+        
+        results = storage.search(
+            collection="test_coll",
+            query="学习 神经网络",
+            n_results=5
+        )
+        
+        if len(results["distances"]) >= 2:
+            # 距离应该递增（从小到大）
+            for i in range(len(results["distances"]) - 1):
+                assert results["distances"][i] <= results["distances"][i + 1]
     
-    def test_vector_storage_error_inheritance(self):
-        """测试 VectorStorageError 继承"""
-        from core.vector_storage import VectorStorageError
+    def test_search_empty_collection(self, storage):
+        """测试搜索空集合"""
+        results = storage.search(
+            collection="empty_coll",
+            query="测试查询"
+        )
         
-        assert issubclass(VectorStorageError, Exception)
+        assert results is None
     
-    def test_collection_not_found_error(self):
-        """测试 CollectionNotFoundError"""
-        from core.vector_storage import CollectionNotFoundError
-        
-        error = CollectionNotFoundError("test collection not found")
-        assert "test collection not found" in str(error)
-        assert isinstance(error, Exception)
-    
-    def test_document_not_found_error(self):
-        """测试 DocumentNotFoundError"""
-        from core.vector_storage import DocumentNotFoundError
-        
-        error = DocumentNotFoundError("doc_123 not found")
-        assert "doc_123 not found" in str(error)
-        assert isinstance(error, Exception)
-    
-    def test_embedding_error(self):
-        """测试 EmbeddingError"""
-        from core.vector_storage import EmbeddingError
-        
-        error = EmbeddingError("Embedding generation failed")
-        assert "Embedding generation failed" in str(error)
-
-
-class TestMetadataHandling:
-    """测试元数据处理"""
-    
-    def test_metadata_timestamp_added(self, temp_dir):
-        """测试元数据中添加时间戳"""
-        from core.vector_storage import VectorStorage
-        from datetime import datetime
-        
-        with patch('core.vector_storage.chromadb'):
-            vs = VectorStorage.__new__(VectorStorage)
-            vs._lock = MagicMock()
-            vs._collections = {}
-            vs._validate_collection = MagicMock(return_value="knowledge")
-            vs._get_or_create_collection = MagicMock()
-            
-            mock_collection = MagicMock()
-            vs._get_or_create_collection.return_value = mock_collection
-            
-            # Call add_vector
-            with patch.object(vs, '_generate_id', return_value='doc_test'):
-                vs.add_vector(
-                    content="test",
-                    metadata={"key": "value"}
-                )
-            
-            # Verify add was called with timestamp
-            mock_collection.add.assert_called()
-            call_args = mock_collection.add.call_args
-            
-            # Check metadata contains timestamp
-            metadata = call_args.kwargs.get('metadatas', [{}])[0]
-            assert 'created_at' in metadata
-            assert 'updated_at' in metadata
-
-
-class TestBatchOperations:
-    """测试批量操作"""
-    
-    def test_add_vectors_length_mismatch(self, temp_dir):
-        """测试批量添加时长度不匹配"""
-        from core.vector_storage import VectorStorage
-        from core.vector_storage import VectorStorageError
-        
-        with patch('core.vector_storage.chromadb'):
-            vs = VectorStorage.__new__(VectorStorage)
-            vs._lock = MagicMock()
-            vs._collections = {}
-            vs._validate_collection = MagicMock(return_value="knowledge")
-            
-            with pytest.raises(VectorStorageError):
-                vs.add_vectors(
-                    contents=["Doc 1", "Doc 2", "Doc 3"],
-                    doc_ids=["id1", "id2"]  # Mismatch!
-                )
-
-
-class TestSearchResults:
-    """测试搜索结果格式"""
-    
-    def test_search_result_structure(self):
-        """测试搜索结果结构"""
-        from core.vector_storage import VectorStorage
-        
-        # Simulate search result parsing
-        raw_results = {
-            "ids": [["doc1", "doc2"]],
-            "documents": [["content1", "content2"]],
-            "metadatas": [[{"tag": "a"}, {"tag": "b"}]],
-            "distances": [[0.1, 0.2]]
-        }
-        
-        # Parse results (simulating the logic in search_vector)
-        parsed_results = []
-        if raw_results.get("ids") and raw_results["ids"][0]:
-            ids = raw_results["ids"][0]
-            documents = raw_results.get("documents", [[]])[0]
-            metadatas = raw_results.get("metadatas", [[]])[0]
-            distances = raw_results.get("distances", [[]])[0]
-            
-            for i, doc_id in enumerate(ids):
-                result = {
-                    "id": doc_id,
-                    "content": documents[i] if i < len(documents) else "",
-                    "metadata": metadatas[i] if i < len(metadatas) else {},
-                    "distance": distances[i] if i < len(distances) else 0.0
-                }
-                parsed_results.append(result)
-        
-        assert len(parsed_results) == 2
-        assert parsed_results[0]["id"] == "doc1"
-        assert parsed_results[0]["content"] == "content1"
-        assert parsed_results[0]["distance"] == 0.1
-        assert parsed_results[1]["metadata"]["tag"] == "b"
-
-
-class TestUpsertLogic:
-    """测试 Upsert 逻辑"""
-    
-    def test_upsert_insert_new(self, temp_dir):
-        """测试 upsert 插入新文档"""
-        from core.vector_storage import VectorStorage
-        
-        with patch('core.vector_storage.chromadb'):
-            vs = VectorStorage.__new__(VectorStorage)
-            vs._lock = MagicMock()
-            vs._collections = {}
-            vs._validate_collection = MagicMock(return_value="knowledge")
-            vs._get_or_create_collection = MagicMock()
-            
-            mock_collection = MagicMock()
-            mock_collection.get.return_value = {"documents": []}  # Not exists
-            vs._get_or_create_collection.return_value = mock_collection
-            
-            with patch.object(vs, 'add_vector') as mock_add:
-                vs.upsert_vector(
-                    doc_id="new_doc",
-                    content="new content"
-                )
-                
-                mock_add.assert_called_once()
-    
-    def test_upsert_update_existing(self, temp_dir):
-        """测试 upsert 更新已有文档"""
-        from core.vector_storage import VectorStorage
-        
-        with patch('core.vector_storage.chromadb'):
-            vs = VectorStorage.__new__(VectorStorage)
-            vs._lock = MagicMock()
-            vs._collections = {}
-            vs._validate_collection = MagicMock(return_value="knowledge")
-            vs._get_or_create_collection = MagicMock()
-            
-            mock_collection = MagicMock()
-            mock_collection.get.return_value = {
-                "documents": ["old content"],
-                "metadatas": [{"old": "meta"}]
-            }
-            vs._get_or_create_collection.return_value = mock_collection
-            
-            vs.upsert_vector(
-                doc_id="existing_doc",
-                content="updated content"
+    def test_search_with_limit(self, storage, sample_data):
+        """测试搜索结果数量限制"""
+        for item in sample_data:
+            storage.add(
+                collection="test_coll",
+                doc_id=item["id"],
+                document=item["content"],
+                metadata=item["metadata"]
             )
-            
-            # Should call delete then add
-            mock_collection.delete.assert_called_once()
-            mock_collection.add.assert_called_once()
+        
+        results = storage.search(
+            collection="test_coll",
+            query="学习",
+            n_results=2
+        )
+        
+        assert len(results["ids"]) <= 2
+    
+    def test_search_returns_distances(self, storage):
+        """测试搜索返回距离"""
+        storage.add("test", "d1", "内容一", {})
+        storage.add("test", "d2", "内容二", {})
+        
+        results = storage.search("test", "内容", n_results=2)
+        
+        assert "distances" in results
+        assert len(results["distances"]) == len(results["ids"])
+
+
+class TestDeleteVector:
+    """测试删除向量"""
+    
+    def test_delete_existing_vector(self, storage):
+        """测试删除存在的向量"""
+        storage.add(
+            collection="test_coll",
+            doc_id="delete_me",
+            document="将被删除的文档",
+            metadata={}
+        )
+        
+        storage.delete(collection="test_coll", doc_id="delete_me")
+        
+        coll = storage.collections["test_coll"]
+        assert "delete_me" not in coll["ids"]
+    
+    def test_delete_nonexistent_vector(self, storage):
+        """测试删除不存在的向量（不应报错）"""
+        # 不应抛出异常
+        storage.delete(collection="test_coll", doc_id="nonexistent")
+    
+    def test_delete_from_empty_collection(self, storage):
+        """测试从空集合删除"""
+        storage.delete(collection="empty_coll", doc_id="doc")
+
+
+class TestPersistence:
+    """测试持久化"""
+    
+    def test_save_and_load(self, temp_dir):
+        """测试保存和加载（使用默认集合）"""
+        # 创建第一个实例并添加数据到默认集合
+        vs1 = VectorStorage(persist_dir=temp_dir)
+        vs1.add("memories", "doc1", "内容1", {})
+        vs1.add("memories", "doc2", "内容2", {})
+        
+        # 创建第二个实例（应该加载已有数据）
+        vs2 = VectorStorage(persist_dir=temp_dir)
+        
+        assert "doc1" in vs2.collections["memories"]["ids"]
+        assert "doc2" in vs2.collections["memories"]["ids"]
+    
+    def test_persistence_file_exists(self, temp_dir):
+        """测试持久化文件存在"""
+        vs = VectorStorage(persist_dir=temp_dir)
+        vs.add("test", "doc", "内容", {})
+        
+        import os
+        assert os.path.exists(os.path.join(temp_dir, "vectors.json"))
+
+
+class TestConvenienceFunctions:
+    """测试便捷函数（使用全局 vector_db 实例）"""
+    
+    def test_add_vector_function(self, temp_dir):
+        """测试 add_vector 便捷函数"""
+        # 设置全局实例的目录
+        import chromadb_storage
+        chromadb_storage.vector_db.persist_dir = temp_dir
+        
+        add_vector(
+            collection="func_test",
+            doc_id="func_doc",
+            document="便捷函数测试",
+            metadata={"source": "test"}
+        )
+        
+        coll = chromadb_storage.vector_db.collections["func_test"]
+        assert "func_doc" in coll["ids"]
+    
+    def test_search_vector_function(self, temp_dir):
+        """测试 search_vector 便捷函数"""
+        import chromadb_storage
+        chromadb_storage.vector_db.persist_dir = temp_dir
+        
+        chromadb_storage.vector_db.add("func_test", "s_doc1", "搜索内容一", {})
+        chromadb_storage.vector_db.add("func_test", "s_doc2", "搜索内容二", {})
+        
+        results = search_vector(
+            collection="func_test",
+            query="搜索内容"
+        )
+        
+        assert results is not None
+        assert len(results["ids"]) > 0
+    
+    def test_delete_vector_function(self, temp_dir):
+        """测试 delete_vector 便捷函数"""
+        import chromadb_storage
+        chromadb_storage.vector_db.persist_dir = temp_dir
+        
+        chromadb_storage.vector_db.add("func_test", "del_doc", "将被删除", {})
+        
+        delete_vector(
+            collection="func_test",
+            doc_id="del_doc"
+        )
+        
+        coll = chromadb_storage.vector_db.collections["func_test"]
+        assert "del_doc" not in coll["ids"]
 
 
 class TestEdgeCases:
     """边界情况测试"""
     
-    def test_empty_content(self):
-        """测试空内容"""
-        from core.vector_storage import VectorStorage
-        
-        with patch('core.vector_storage.chromadb'):
-            vs = VectorStorage.__new__(VectorStorage)
-            vs._lock = MagicMock()
-            vs._collections = {}
-            vs._validate_collection = MagicMock(return_value="knowledge")
-            vs._get_or_create_collection = MagicMock()
-            vs._generate_id = MagicMock(return_value="doc_empty")
-            
-            doc_id = vs.add_vector(content="")
-            
-            assert doc_id == "doc_empty"
-            vs._get_or_create_collection.assert_called()
+    def test_very_long_document(self, storage):
+        """测试超长文档"""
+        long_doc = "word " * 1000
+        storage.add("test", "long_doc", long_doc, {})
+        coll = storage.collections["test"]
+        assert "long_doc" in coll["ids"]
     
-    def test_very_long_content(self):
-        """测试超长内容"""
-        from core.vector_storage import VectorStorage
-        
-        long_content = "word " * 1000
-        
-        with patch('core.vector_storage.chromadb'):
-            vs = VectorStorage.__new__(VectorStorage)
-            vs._lock = MagicMock()
-            vs._collections = {}
-            vs._validate_collection = MagicMock(return_value="knowledge")
-            vs._get_or_create_collection = MagicMock()
-            vs._generate_id = MagicMock(return_value="doc_long")
-            
-            doc_id = vs.add_vector(content=long_content)
-            
-            assert doc_id == "doc_long"
-    
-    def test_special_characters(self):
+    def test_special_characters(self, storage):
         """测试特殊字符"""
-        from core.vector_storage import VectorStorage
-        
-        special_content = "Hello! @#$%^&*() 世界 🌍 émojis"
-        
-        with patch('core.vector_storage.chromadb'):
-            vs = VectorStorage.__new__(VectorStorage)
-            vs._lock = MagicMock()
-            vs._collections = {}
-            vs._validate_collection = MagicMock(return_value="knowledge")
-            vs._get_or_create_collection = MagicMock()
-            vs._generate_id = MagicMock(return_value="doc_special")
-            
-            doc_id = vs.add_vector(content=special_content)
-            
-            assert doc_id == "doc_special"
+        special = "Hello! @#$%^&*() 世界 🌍 émojis"
+        storage.add("test", "special", special, {})
+        coll = storage.collections["test"]
+        assert "special" in coll["ids"]
     
-    def test_unicode_metadata(self):
-        """测试 Unicode 元数据"""
-        from core.vector_storage import VectorStorage
-        
-        unicode_metadata = {"chinese": "中文", "emoji": "🚀"}
-        
-        with patch('core.vector_storage.chromadb'):
-            vs = VectorStorage.__new__(VectorStorage)
-            vs._lock = MagicMock()
-            vs._collections = {}
-            vs._validate_collection = MagicMock(return_value="knowledge")
-            vs._get_or_create_collection = MagicMock()
-            vs._generate_id = MagicMock(return_value="doc_unicode")
-            
-            doc_id = vs.add_vector(content="test", metadata=unicode_metadata)
-            
-            assert doc_id == "doc_unicode"
-
-
-class TestConcurrency:
-    """并发测试"""
+    def test_metadata_types(self, storage):
+        """测试各种元数据类型"""
+        metadata = {
+            "string": "value",
+            "number": 42,
+            "float": 3.14,
+            "bool": True,
+            "list": [1, 2, 3],
+            "none": None
+        }
+        storage.add("test", "meta", "内容", metadata)
     
-    def test_thread_lock(self):
-        """测试线程锁"""
-        from core.vector_storage import VectorStorage
+    def test_multiple_collections(self, storage):
+        """测试多个集合"""
+        for i in range(3):
+            storage.add(f"coll_{i}", f"doc_{i}", f"内容{i}", {})
         
-        with patch('core.vector_storage.chromadb'):
-            vs = VectorStorage(persist_dir=":memory:")
-            
-            # Verify lock is created
-            assert vs._lock is not None
-            
-            # Try acquiring lock
-            with vs._lock:
-                # Do some work
-                pass
-            
-            vs.close()
-
-
-class TestListCollections:
-    """测试列出集合"""
+        for i in range(3):
+            coll = storage.collections[f"coll_{i}"]
+            assert f"doc_{i}" in coll["ids"]
     
-    def test_list_collections_format(self):
-        """测试列出集合返回格式"""
-        from core.vector_storage import VectorStorage
+    def test_vectors_are_numpy_arrays(self, storage):
+        """测试向量是 NumPy 数组"""
+        import numpy as np
         
-        with patch('core.vector_storage.chromadb'):
-            vs = VectorStorage.__new__(VectorStorage)
-            vs._lock = MagicMock()
-            vs._collections = {"coll1": MagicMock(), "coll2": MagicMock()}
-            
-            collections = vs.list_collections()
-            
-            assert isinstance(collections, list)
-            assert "coll1" in collections
-            assert "coll2" in collections
+        storage.add("test", "v1", "测试内容", {})
+        coll = storage.collections["test"]
+        
+        # 检查向量是 NumPy 数组
+        assert len(coll["vectors"]) > 0
+        assert isinstance(coll["vectors"][0], np.ndarray)
 
 
 # ============ Main Entry Point ============

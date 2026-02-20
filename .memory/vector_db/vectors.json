@@ -1,0 +1,30 @@
+{
+  "memories": {
+    "ids": [],
+    "documents": [],
+    "metadatas": []
+  },
+  "conversations": {
+    "ids": [],
+    "documents": [],
+    "metadatas": []
+  },
+  "knowledge": {
+    "ids": [],
+    "documents": [],
+    "metadatas": []
+  },
+  "func_test": {
+    "ids": [
+      "func_doc"
+    ],
+    "documents": [
+      "便捷函数测试"
+    ],
+    "metadatas": [
+      {
+        "source": "test"
+      }
+    ]
+  }
+}
